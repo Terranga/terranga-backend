@@ -69,41 +69,10 @@ public class APIServlet extends HttpServlet {
 			currentUserSummary.put("loggedIn", "yes");
 			response.put("currentUser", currentUserSummary);
 		}
-
 		
 		if (resource.equals("test")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        Profile.fetchProfiles(datastore, 0);
-			
-	        /*
-			try {
-				byte[] file = fetchFileBytes("resources/application.docx");
-				System.out.println("FILE SIZE: "+file.length);
-				sendEmailWithAttachment("dennykwon2@gmail.com", "This is a TEST email", file, "application.docx");
-				resp.getWriter().print("Email Sent: "+file.length+" bytes");
-			}
-			catch(FileNotFoundException e){
-				System.out.println("FileNotFoundException: "+e.getMessage());
-				resp.getWriter().print("FileNotFoundException: "+e.getMessage());
-			}
-			catch(IOException e){
-				System.out.println("IOException: "+e.getMessage());
-				resp.getWriter().print("IOException: "+e.getMessage());
-			}
-			catch(AddressException e){
-				System.out.println("AddressException: "+e.getMessage());
-				resp.getWriter().print("AddressException: "+e.getMessage());
-			}
-			catch(MessagingException e){
-				System.out.println("MessagingException: "+e.getMessage());
-				resp.getWriter().print("MessagingException: "+e.getMessage());
-			}
-//			catch(UnsupportedEncodingException e){
-//				System.out.println("UnsupportedEncodingException: "+e.getMessage());
-//			}
-
- */
-
 		}
 		
 		
