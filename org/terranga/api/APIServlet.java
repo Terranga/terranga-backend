@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
@@ -32,8 +33,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -371,6 +374,35 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
+		
+		if (resource.equals("messages")){
+			String body = getBody(req);
+			
+			try{
+				JSONObject json = new JSONObject(body);
+				Message message = new Message();
+				message.update(json);
+				message.save();
+				
+				response.put("confirmation", "success");
+				response.put("profile", message.getSummary()); 
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+		}
+				
+			
+			
+			
+		
 	}
 	
 	
@@ -429,6 +461,8 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
+		
+		
 	}
 
 	
