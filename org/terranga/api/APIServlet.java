@@ -15,10 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
@@ -34,10 +32,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -71,8 +67,10 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("test")){
-	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	        Profile.fetchProfiles(datastore, 0);
+//	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//	        
+//	        Message.fetchMessagesByThread(datastore, "123123", 0);
+	        
 		}
 		
 		
@@ -539,7 +537,7 @@ public class APIServlet extends HttpServlet {
 		return fileContent;
 	}
 	
-	
+	/*
 	private void sendEmailWithAttachment(String recipient, String content, byte[] attch, String fileName) throws AddressException, MessagingException, UnsupportedEncodingException {
 		Properties props = new Properties();
 	    Session session = Session.getDefaultInstance(props, null);
@@ -570,10 +568,10 @@ public class APIServlet extends HttpServlet {
         mp.addBodyPart(attachment);
         msg.setContent(mp);
         Transport.send(msg);
-	}
+	} */
 
 	
-	
+	/*
 	public boolean sendEmail(String recipient, String content, String subject){
 		boolean confirmation = false;
 		Properties props = new Properties();
@@ -613,6 +611,7 @@ public class APIServlet extends HttpServlet {
 	public boolean sendEmail(String recipient, String content){
 		return sendEmail(recipient, content, "Terranga");
 	}
+	*/
 
 
 }
