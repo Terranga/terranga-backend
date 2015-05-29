@@ -162,14 +162,62 @@ public class APIServlet extends HttpServlet {
 		if (resource.equals("messages")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        
+
+	        
+	        String messageID = request.getResourceIdentifier();
+	        
+	        
+			if (messageID != null){
+				Message message = Message.fetchMessage(datastore, messageID);
+				if (message==null){
+					response.put("confirmation", "fail");
+					response.put("message", "Message "+messageID+" not found.");
+			        	
+					JSONObject json = new JSONObject(response);
+					resp.getWriter().println(json.toString());
+					return;
+				}
+				
+				response.put("confirmation", "success");
+				response.put("message", message.getSummary());
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
+			}
+	        
+	        
+	        
 	        
 	        String senderID = req.getParameter("senderID");
+	        String recipientID = req.getParameter("recipientID");
+	        String threadID = req.getParameter("threadID");  
 	        
-	        //CONTINUE WITH CODING
-	        return;
+	        ArrayList<Message> messages = null;
+	        
+	        if(senderID != null)
+	        	messages = Message.fetchMessagesBySender(datastore, senderID, 0);
 	        
 	        
-		
+	        if(recipientID != null)
+	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, 0);
+	        
+	        
+	        if(threadID != null)
+	        	messages = Message.fetchMessagesByThread(datastore, threadID, 0);
+	        
+	        
+	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+	        for (Message message : messages)
+	        	results.add(message.getSummary());
+	        
+	        response.put("confirmation", "success");
+			response.put("messages", results);
+	        	
+			JSONObject json = new JSONObject(response);
+			resp.getWriter().println(json.toString());
+			return;
+
 		}
 		
 	}

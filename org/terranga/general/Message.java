@@ -200,7 +200,7 @@ public class Message {
 //- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
 	
 	//FETCH SINGLE MESSAGE (ID)
-	public static Message fetchProfile(DatastoreService datastore, String messageID){
+	public static Message fetchMessage(DatastoreService datastore, String messageID){
 		Message m = null;
 		try {
 			Entity ent = datastore.get(KeyFactory.createKey("Message", messageID));
