@@ -20,7 +20,10 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Text;
+
 
 public class Message {
 	
@@ -247,6 +250,21 @@ public class Message {
 		
 		Filter recipientFilter = new FilterPredicate("recipientID", FilterOperator.EQUAL, recipientID);
 		q.setFilter(recipientFilter);
+		
+		ArrayList<Message> messages = executeQuery(datastore, q, limit);
+		return messages;
+	}
+	
+	//FETCH MESSAGES (FILTER: RECIPIENT ID & SENDER ID)
+	public static ArrayList<Message> fetchMessagesWithSenderAndReciever(DatastoreService datastore, String recipientID, String senderID,  int limit){
+		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
+		
+		Filter recipientFilter = new FilterPredicate("recipientID", FilterOperator.EQUAL, recipientID);
+		Filter senderFilter = new FilterPredicate("senderID", FilterOperator.EQUAL, senderID);
+		
+		CompositeFilter combinedFilter = CompositeFilterOperator.and(recipientFilter, senderFilter);
+		q.setFilter(combinedFilter);
+		
 		
 		ArrayList<Message> messages = executeQuery(datastore, q, limit);
 		return messages;
