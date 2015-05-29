@@ -159,6 +159,19 @@ public class APIServlet extends HttpServlet {
 			return;
 		}
 		
+		if (resource.equals("messages")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        
+	        
+	        String senderID = req.getParameter("senderID");
+	        
+	        //CONTINUE WITH CODING
+	        return;
+	        
+	        
+		
+		}
+		
 	}
 
 	
