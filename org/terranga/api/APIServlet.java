@@ -186,25 +186,30 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 	        
-	        
-	        
-	        
 	        String senderID = req.getParameter("senderID");
 	        String recipientID = req.getParameter("recipientID");
 	        String threadID = req.getParameter("threadID");  
 	        
+			String limit = req.getParameter("limit");
+			if (limit==null)
+				limit = "0";
+	        
 	        ArrayList<Message> messages = null;
 	        
 	        if(senderID != null)
-	        	messages = Message.fetchMessagesBySender(datastore, senderID, 0);
+	        	messages = Message.fetchMessagesBySender(datastore, senderID, Integer.parseInt(limit));
 	        
 	        
 	        if(recipientID != null)
-	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, 0);
+	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, Integer.parseInt(limit));
 	        
 	        
 	        if(threadID != null)
-	        	messages = Message.fetchMessagesByThread(datastore, threadID, 0);
+	        	messages = Message.fetchMessagesByThread(datastore, threadID, Integer.parseInt(limit));
+	        
+	        if(senderID !=null && recipientID !=null){
+	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
+	        }
 	        
 	        
 	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
