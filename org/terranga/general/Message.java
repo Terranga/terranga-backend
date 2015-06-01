@@ -259,11 +259,21 @@ public class Message {
 	public static ArrayList<Message> fetchMessagesWithSenderAndReciever(DatastoreService datastore, String recipientID, String senderID,  int limit){
 		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
 		
+		//FOR FIRST SET
 		Filter recipientFilter = new FilterPredicate("recipientID", FilterOperator.EQUAL, recipientID);
 		Filter senderFilter = new FilterPredicate("senderID", FilterOperator.EQUAL, senderID);
 		
 		CompositeFilter combinedFilter = CompositeFilterOperator.and(recipientFilter, senderFilter);
-		q.setFilter(combinedFilter);
+		
+		//FOR FIRST SET
+		Filter recipientFilterB = new FilterPredicate("recipientID", FilterOperator.EQUAL, senderID);
+		Filter senderFilterB = new FilterPredicate("senderID", FilterOperator.EQUAL, recipientID);
+		
+		CompositeFilter combinedFilterB = CompositeFilterOperator.and(recipientFilterB, senderFilterB);
+		
+		//COMBINE TWO COMPOSITE FILTERS
+		CompositeFilter totalCombinedFilter = CompositeFilterOperator.or(combinedFilter, combinedFilterB);
+		q.setFilter(totalCombinedFilter);
 		
 		
 		ArrayList<Message> messages = executeQuery(datastore, q, limit);
