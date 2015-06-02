@@ -257,7 +257,7 @@ public class Message {
 	
 	//FETCH MESSAGES (FILTER: RECIPIENT ID & SENDER ID)
 	public static ArrayList<Message> fetchMessagesWithSenderAndReciever(DatastoreService datastore, String recipientID, String senderID,  int limit){
-		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
+		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.ASCENDING);
 		
 		//FOR FIRST SET
 		Filter recipientFilter = new FilterPredicate("recipientID", FilterOperator.EQUAL, recipientID);

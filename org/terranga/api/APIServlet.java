@@ -70,8 +70,9 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("test")){
-//	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-//	        Message.fetchMessagesWithSenderAndReciever(datastore, "123123","456456", 0);
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        //Message.fetchMessagesByThread(datastore, "123123", 0);
+	        Message.fetchMessagesWithSenderAndReciever(datastore, "B", "A", 0);
 		}
 		
 		
