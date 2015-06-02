@@ -100,7 +100,7 @@ public class Message {
 		summary.put("senderID", getSenderID());
 		summary.put("recipientID", getRecipientID());
 		summary.put("subject", getSubject());
-		summary.put("body", getBody());
+		summary.put("body", getBody().getValue());
 
 		return summary;
 	}	

@@ -70,8 +70,8 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("test")){
-	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	        Message.fetchMessagesByThread(datastore, "123123", 0);
+//	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//	        Message.fetchMessagesWithSenderAndReciever(datastore, "123123","456456", 0);
 		}
 		
 		
@@ -451,7 +451,7 @@ public class APIServlet extends HttpServlet {
 				message.save();
 				
 				response.put("confirmation", "success");
-				response.put("profile", message.getSummary()); 
+				response.put("message", message.getSummary()); 
 				JSONObject jsonResponse = new JSONObject(response);
 				resp.getWriter().print(jsonResponse.toString());
 				return;
