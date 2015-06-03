@@ -102,13 +102,13 @@ public class Insight {
 		}
 
 		if (json.has("categoryTag")){
-			String ct = json.getString("cagtegoryTag");
+			String ct = json.getString("categoryTag");
 			if (ct.length() > 0)
 				setCategoryTag(ct);
 		}
 		
 		if (json.has("description"))
-			setDescription(new Text(json.getString("bio")));
+			setDescription(new Text(json.getString("description")));
 	}
 	
 	//SAVE METHODS
