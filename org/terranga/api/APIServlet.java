@@ -197,20 +197,32 @@ public class APIServlet extends HttpServlet {
 	        
 	        ArrayList<Message> messages = null;
 	        
-	        if(senderID != null)
+	        if(senderID !=null && recipientID !=null){
+	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
+	        	
+	        }
+	        
+	        else if(senderID != null)
 	        	messages = Message.fetchMessagesBySender(datastore, senderID, Integer.parseInt(limit));
 	        
 	        
-	        if(recipientID != null)
+	        else if(recipientID != null)
 	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, Integer.parseInt(limit));
 	        
 	        
-	        if(threadID != null)
+	        else if(threadID != null)
 	        	messages = Message.fetchMessagesByThread(datastore, threadID, Integer.parseInt(limit));
 	        
-	        if(senderID !=null && recipientID !=null){
-	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
+	        else{
+	        	response.put("confirmation", "failure");
+				response.put("messages", "Invalid Request");
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
 	        }
+	        
+
 	        
 	        
 	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
