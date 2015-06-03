@@ -1,5 +1,6 @@
 package org.terranga.general;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,16 @@ import org.json.JSONObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Insight {
 	//AUTO GENERATED
@@ -159,4 +169,62 @@ public class Insight {
 	public void setDescription(Text description) {
 		this.description = description;
 	}
+
+
+//- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
+	
+	//EXECUTE QUERY
+	private static ArrayList<Insight> executeQuery(DatastoreService datastore, Query q, int limit){
+		PreparedQuery pq = datastore.prepare(q);
+				
+		FetchOptions options = (limit==0) ? FetchOptions.Builder.withDefaults() : FetchOptions.Builder.withLimit(limit);
+		QueryResultList<Entity> results = pq.asQueryResultList(options); //THE REQUEST
+		ArrayList<Insight> insights = new ArrayList<Insight>();
+		for(Entity e : results){
+			insights.add(new Insight(e));
+		}
+		return insights;
+	}
+	
+	//FETCH SINGLE INSIGHT (ID)
+	public static Insight fetchInsight(DatastoreService datastore, String insightID){
+		Insight i = null;
+		try {
+			Entity ent = datastore.get(KeyFactory.createKey("Inisght", insightID));
+			i = new Insight(ent);
+		}
+		catch(EntityNotFoundException e){
+		}
+		return i;
+	}
+	
+	//FETCH ALL INSIGHTS
+	public static ArrayList<Insight> fetchInsights(DatastoreService datastore, int limit){
+		Query q = new Query("Insight").addSort("timestamp", Query.SortDirection.DESCENDING);
+		ArrayList<Insight> insights = executeQuery(datastore, q, limit);
+		return insights;
+	}
+	
+	//FETCH INSIGHTS (profileID)
+	public static ArrayList<Insight> fetchInsightsWithProfileID(DatastoreService datastore, String profileID,  int limit){
+		Query q = new Query("Insight").addSort("timestamp", Query.SortDirection.DESCENDING);
+		
+		Filter profileIDFilter = new FilterPredicate("profileID", FilterOperator.EQUAL, profileID);
+		q.setFilter(profileIDFilter);
+		
+		ArrayList<Insight> insights = executeQuery(datastore, q, limit);
+		return insights;
+	}
+	
+	//FETCH INSIGHTS (categoryTag)
+	public static ArrayList<Insight> fetchInsightsWithCategoryTag(DatastoreService datastore, String categoryTag,  int limit){
+		Query q = new Query("Insight").addSort("timestamp", Query.SortDirection.DESCENDING);
+		
+		Filter categoryTagFilter = new FilterPredicate("categoryTag", FilterOperator.EQUAL, categoryTag);
+		q.setFilter(categoryTagFilter);
+		
+		ArrayList<Insight> insights = executeQuery(datastore, q, limit);
+		return insights;
+	}
+
 }
