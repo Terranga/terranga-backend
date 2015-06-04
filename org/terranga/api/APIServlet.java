@@ -163,10 +163,7 @@ public class APIServlet extends HttpServlet {
 		if (resource.equals("messages")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        
-
-	        
 	        String messageID = request.getResourceIdentifier();
-	        
 	        
 			if (messageID != null){
 				Message message = Message.fetchMessage(datastore, messageID);
@@ -197,21 +194,18 @@ public class APIServlet extends HttpServlet {
 	        
 	        ArrayList<Message> messages = null;
 	        
-	        if(senderID != null)
+	        if(senderID !=null && recipientID !=null)
+	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
+	        
+	        else if(senderID != null)
 	        	messages = Message.fetchMessagesBySender(datastore, senderID, Integer.parseInt(limit));
 	        
-	        
-	        if(recipientID != null)
+	        else if(recipientID != null)
 	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, Integer.parseInt(limit));
 	        
-	        
-	        if(threadID != null)
+	        else if(threadID != null)
 	        	messages = Message.fetchMessagesByThread(datastore, threadID, Integer.parseInt(limit));
-	        
-	        if(senderID !=null && recipientID !=null){
-	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
-	        }
-	        
+
 	        
 	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 	        for (Message message : messages)
@@ -231,7 +225,6 @@ public class APIServlet extends HttpServlet {
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        
 	        String insightID = request.getResourceIdentifier();
-	        
 	        
 			if (insightID != null){
 				Insight insight = Insight.fetchInsight(datastore, insightID);
@@ -264,7 +257,7 @@ public class APIServlet extends HttpServlet {
 	        if(profileID != null)
 	        	insights = Insight.fetchInsightsWithProfileID(datastore, profileID, Integer.parseInt(limit));
 	        	        
-	        if(categoryTag != null)
+	        else if(categoryTag != null)
 	        	insights = Insight.fetchInsightsWithCategoryTag(datastore, categoryTag, Integer.parseInt(limit));
 	      
 	        
