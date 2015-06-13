@@ -95,14 +95,14 @@ public class Insight {
 	
 	//UPDATE FROM JSON-SUMMARY
 	public void update(JSONObject json) throws JSONException {
-		if (json.has("profileID")){
-			String pID = json.getString("profileID");
+		if (json.has("profile")){
+			String pID = json.getString("profile");
 			if (pID.length() > 0)
 				setProfileID(pID);
 		}
 
-		if (json.has("categoryTag")){
-			String ct = json.getString("categoryTag");
+		if (json.has("category")){
+			String ct = json.getString("category");
 			if (ct.length() > 0)
 				setCategoryTag(ct);
 		}
