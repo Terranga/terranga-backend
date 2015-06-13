@@ -70,9 +70,8 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("test")){
-	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	        //Message.fetchMessagesByThread(datastore, "123123", 0);
-	        Insight.fetchInsights(datastore, 0);
+//	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//	        Insight.fetchInsightsWithProfileID(datastore, "123123", 0);	        
 		}
 		
 		
@@ -235,7 +234,6 @@ public class APIServlet extends HttpServlet {
 		
 		if (resource.equals("insights")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	        
 	        String insightID = request.getResourceIdentifier();
 	        
 			if (insightID != null){
@@ -257,8 +255,8 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 	        
-	        String profileID = req.getParameter("profileID");
-	        String categoryTag = req.getParameter("categoryTag");
+	        String profileID = req.getParameter("profile");
+	        String categoryTag = req.getParameter("category");
 	        
 			String limit = req.getParameter("limit");
 			if (limit==null)
@@ -266,12 +264,14 @@ public class APIServlet extends HttpServlet {
 	        
 	        ArrayList<Insight> insights = null;
 	        
-	        if(profileID != null)
+	        if (profileID != null)
 	        	insights = Insight.fetchInsightsWithProfileID(datastore, profileID, Integer.parseInt(limit));
 	        	        
-	        else if(categoryTag != null)
+	        else if (categoryTag != null)
 	        	insights = Insight.fetchInsightsWithCategoryTag(datastore, categoryTag, Integer.parseInt(limit));
-	      
+	        
+	        if (insights == null)
+	        	insights = Insight.fetchInsights(datastore, 0);
 	        
 	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 	        for (Insight insight : insights)
@@ -549,10 +549,6 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
-			
-			
-			
-			
 		
 	}
 	
