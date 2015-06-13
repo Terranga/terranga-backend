@@ -72,7 +72,7 @@ public class APIServlet extends HttpServlet {
 		if (resource.equals("test")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        //Message.fetchMessagesByThread(datastore, "123123", 0);
-	        Message.fetchMessagesWithSenderAndReciever(datastore, "B", "A", 0);
+	        Insight.fetchInsights(datastore, 0);
 		}
 		
 		
@@ -163,10 +163,7 @@ public class APIServlet extends HttpServlet {
 		if (resource.equals("messages")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        
-
-	        
 	        String messageID = request.getResourceIdentifier();
-	        
 	        
 			if (messageID != null){
 				Message message = Message.fetchMessage(datastore, messageID);
@@ -197,14 +194,11 @@ public class APIServlet extends HttpServlet {
 	        
 	        ArrayList<Message> messages = null;
 	        
-	        if(senderID !=null && recipientID !=null){
+	        if(senderID !=null && recipientID !=null)
 	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
-	        	
-	        }
 	        
 	        else if(senderID != null)
 	        	messages = Message.fetchMessagesBySender(datastore, senderID, Integer.parseInt(limit));
-	        
 	        
 	        else if(recipientID != null)
 	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, Integer.parseInt(limit));
@@ -231,6 +225,60 @@ public class APIServlet extends HttpServlet {
 	        
 	        response.put("confirmation", "success");
 			response.put("messages", results);
+	        	
+			JSONObject json = new JSONObject(response);
+			resp.getWriter().println(json.toString());
+			return;
+
+		}
+		
+		
+		if (resource.equals("insights")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        
+	        String insightID = request.getResourceIdentifier();
+	        
+			if (insightID != null){
+				Insight insight = Insight.fetchInsight(datastore, insightID);
+				if (insight==null){
+					response.put("confirmation", "fail");
+					response.put("message", "Insight "+insightID+" not found.");
+			        	
+					JSONObject json = new JSONObject(response);
+					resp.getWriter().println(json.toString());
+					return;
+				}
+				
+				response.put("confirmation", "success");
+				response.put("insight", insight.getSummary());
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
+			}
+	        
+	        String profileID = req.getParameter("profileID");
+	        String categoryTag = req.getParameter("categoryTag");
+	        
+			String limit = req.getParameter("limit");
+			if (limit==null)
+				limit = "0";
+	        
+	        ArrayList<Insight> insights = null;
+	        
+	        if(profileID != null)
+	        	insights = Insight.fetchInsightsWithProfileID(datastore, profileID, Integer.parseInt(limit));
+	        	        
+	        else if(categoryTag != null)
+	        	insights = Insight.fetchInsightsWithCategoryTag(datastore, categoryTag, Integer.parseInt(limit));
+	      
+	        
+	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+	        for (Insight insight : insights)
+	        	results.add(insight.getSummary());
+	        
+	        response.put("confirmation", "success");
+			response.put("insights", results);
 	        	
 			JSONObject json = new JSONObject(response);
 			resp.getWriter().println(json.toString());
@@ -477,7 +525,31 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
+			
+		if (resource.equals("insights")){
+			String body = getBody(req);
+			
+			try{
+				JSONObject json = new JSONObject(body);
+				Insight insight = new Insight();
+				insight.update(json);
+				insight.save();
 				
+				response.put("confirmation", "success");
+				response.put("insight", insight.getSummary()); 
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+		}
+			
 			
 			
 			

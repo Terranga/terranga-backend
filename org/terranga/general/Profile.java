@@ -41,6 +41,7 @@ public class Profile {
 	private Text dream;
 	private Long age;
 	
+	private ArrayList<String> languages;
 	
 	private String isFeatured;
 	
@@ -62,8 +63,13 @@ public class Profile {
 		setDream(new Text(""));
 		setType("traveler");
 		setAge(0L);
+		
+		ArrayList<String> temp = new ArrayList<String>();
+		temp.add("none");
+		setLanguages(temp);
 	}
 	
+	@SuppressWarnings("unchecked") //GO BACK TO THIS!
 	public Profile(Entity ent){
 		setId(ent.getKey().getName());
 		setTimestamp((Date)ent.getProperty("timestamp"));
@@ -80,6 +86,7 @@ public class Profile {
 		setBio((Text)ent.getProperty("bio"));
 		setDream((Text)ent.getProperty("dream"));
 		setImage((String)ent.getProperty("image"));
+		setLanguages((ArrayList<String>)ent.getProperty("languages"));
 	}
 	
 	
@@ -100,6 +107,7 @@ public class Profile {
         p.setProperty("bio", getBio());
         p.setProperty("dream", getDream());
         p.setProperty("image", getImage());
+        p.setProperty("languages", getLanguages());
         return p;
 	}
 	
@@ -121,6 +129,10 @@ public class Profile {
 		summary.put("bio", getBio().getValue());
 		summary.put("dream", getDream().getValue());
 		summary.put("image", getImage());
+		
+		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
+		summary.put("languages", workAround);
+		
 		return summary;
 	}
 	
@@ -181,6 +193,23 @@ public class Profile {
 
 		if (json.has("image"))
 			setImage(json.getString("image"));
+		
+		
+		if(json.has("languages")){
+			ArrayList<String> temp = new ArrayList<String>();
+			JSONArray list = json.getJSONArray("languages");
+			for(int i = 0; i <list.length(); i++){
+				String languageID = list.getString(i);
+				if (languageID.equals("none") == false)
+					temp.add(languageID);
+			}
+			if (temp.size() == 0)
+				temp.add("none");
+			else
+				temp.remove("none");
+			
+			setLanguages(temp);
+		}
 
 	}
 
@@ -334,6 +363,14 @@ public class Profile {
 	public void setDream(Text dream) {
 		this.dream = dream;
 	}
+	
+	public ArrayList<String> getLanguages() {
+		return languages;
+	}
+
+	public void setLanguages(ArrayList<String> languages) {
+		this.languages = languages;
+	}
 
 
 // - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -394,10 +431,6 @@ public class Profile {
 		}
 		
 		return profiles;
-	}
-
-
-
-	
+	}	
 
 }
