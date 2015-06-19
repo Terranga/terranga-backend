@@ -90,8 +90,6 @@ public class APIServlet extends HttpServlet {
 			resp.getWriter().println(json.toString());
 			return;
 		}
-
-		
 		
 		
 		if (resource.equals("currentuser")){
