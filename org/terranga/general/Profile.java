@@ -60,6 +60,8 @@ public class Profile {
 		setPhone("none");
 		setCity("none");
 		setCountry("none");
+		setHomeCity("none");
+		setHomeCountry("none");
 		setImage("XPMHTdp4");
 		setBio(new Text(""));
 		setDream(new Text(""));
@@ -82,6 +84,8 @@ public class Profile {
 		setPassword((String)ent.getProperty("password"));
 		setCity((String)ent.getProperty("city"));
 		setCountry((String)ent.getProperty("country"));
+		setHomeCity((String)ent.getProperty("homeCity"));
+		setHomeCountry((String)ent.getProperty("homeCountry"));
 		setType((String)ent.getProperty("type"));
 		setIsFeatured((String)ent.getProperty("isFeatured"));
 		setAge((Long)ent.getProperty("age"));
@@ -103,8 +107,10 @@ public class Profile {
         p.setProperty("password", getPassword());
         p.setProperty("type", getType());
         p.setProperty("country", getCountry());
+        p.setProperty("homeCountry", getHomeCountry());
         p.setProperty("isFeatured", getIsFeatured());
         p.setProperty("city", getCity());
+        p.setProperty("homeCity", getHomeCity());
         p.setProperty("age", getAge());
         p.setProperty("bio", getBio());
         p.setProperty("dream", getDream());
@@ -119,9 +125,11 @@ public class Profile {
 		summary.put("timestamp", getTimestamp().toString());
 		
 		summary.put("firstName", getFirstName());
-		summary.put("city", getCity());
 		summary.put("type", getType());
+		summary.put("city", getCity());
 		summary.put("country", getCountry());
+		summary.put("homeCity", getHomeCity());
+		summary.put("homeCountry", getHomeCountry());
 		summary.put("lastName", getLastName());
 		summary.put("email", getEmail());
 		summary.put("phone", getPhone());
@@ -179,6 +187,17 @@ public class Profile {
 			String c = json.getString("country");
 			if (c.length() > 0)
 				setCountry(c);
+		}
+		if (json.has("homeCity")){
+			String c = json.getString("homeCity");
+			if (c.length() > 0)
+				setHomeCity(c);
+		}
+
+		if (json.has("homeCountry")){
+			String c = json.getString("homeCountry");
+			if (c.length() > 0)
+				setHomeCountry(c);
 		}
 
 		if (json.has("age"))
