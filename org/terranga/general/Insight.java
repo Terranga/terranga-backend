@@ -190,7 +190,7 @@ public class Insight {
 	public static Insight fetchInsight(DatastoreService datastore, String insightID){
 		Insight i = null;
 		try {
-			Entity ent = datastore.get(KeyFactory.createKey("Inisght", insightID));
+			Entity ent = datastore.get(KeyFactory.createKey("Insight", insightID));
 			i = new Insight(ent);
 		}
 		catch(EntityNotFoundException e){
