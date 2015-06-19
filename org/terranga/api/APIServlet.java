@@ -50,7 +50,6 @@ import com.google.appengine.api.images.ServingUrlOptions;
 
 import org.terranga.general.*;
 
-//comment
 @SuppressWarnings("serial")
 public class APIServlet extends HttpServlet {
 	
@@ -304,6 +303,31 @@ public class APIServlet extends HttpServlet {
 			return;
 
 		}
+		
+		if (resource.equals("dreams")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        String dreamID = request.getResourceIdentifier();
+	        
+			if (dreamID != null){
+				Dream dream = Dream.fetchDream(datastore, dreamID);
+				if (dream==null){
+					response.put("confirmation", "fail");
+					response.put("message", "Dream "+dreamID+" not found.");
+			        	
+					JSONObject json = new JSONObject(response);
+					resp.getWriter().println(json.toString());
+					return;
+				}
+				
+				response.put("confirmation", "success");
+				response.put("dream", dream.getSummary());
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
+			}
+		}
+		
 		
 	}
 
