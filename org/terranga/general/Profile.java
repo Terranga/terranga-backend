@@ -35,6 +35,8 @@ public class Profile {
 	private String phone;
 	private String city;
 	private String country;
+	private String homeCity;
+	private String homeCountry;
 	private String image;
 	private String type;
 	private Text bio;
@@ -322,6 +324,22 @@ public class Profile {
 	public void setCountry(String country) {
 		this.country = country.toLowerCase().trim();
 	}
+	
+	public String getHomeCity() {
+		return homeCity;
+	}
+
+	public void setHomeCity(String homeCity) {
+		this.homeCity = homeCity;
+	}
+
+	public String getHomeCountry() {
+		return homeCountry;
+	}
+
+	public void setHomeCountry(String homeCountry) {
+		this.homeCountry = homeCountry;
+	}	
 
 	public Long getAge() {
 		return age;
@@ -431,6 +449,8 @@ public class Profile {
 		}
 		
 		return profiles;
-	}	
+	}
+
+
 
 }
