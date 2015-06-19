@@ -70,7 +70,8 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("test")){
-//	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Profile.fetchProfiles(datastore, 0);
 //	        Insight.fetchInsightsWithProfileID(datastore, "123123", 0);	        
 		}
 		
@@ -124,8 +125,18 @@ public class APIServlet extends HttpServlet {
 					return;
 				}
 				
+				Map<String, Object> summary = profile.getSummary();
+				ArrayList<Map<String, Object>> insightSummaries = new ArrayList<Map<String, Object>>();
+				ArrayList<Insight> insights = Insight.fetchInsightsWithProfileID(datastore, profile.getId(), 0);
+				for (int i=0; i<insights.size(); i++){
+					Insight insight = insights.get(i);
+					insightSummaries.add(insight.getSummary());
+				}
+				
+				summary.put("insights", insightSummaries);
+				
 				response.put("confirmation", "success");
-				response.put("profile", profile.getSummary());
+				response.put("profile", summary);
 		        	
 				JSONObject json = new JSONObject(response);
 				resp.getWriter().println(json.toString());
@@ -142,14 +153,24 @@ public class APIServlet extends HttpServlet {
 			if (featured != null)
 				profiles = Profile.fetchProfilesWithFeatured(datastore, featured, Integer.parseInt(limit));
 			
-			
 			if (profiles==null)
 		        profiles = Profile.fetchProfiles(datastore, Integer.parseInt(limit));
 
 			
 	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
-	        for (Profile profile : profiles)
-	        	results.add(profile.getSummary());
+	        for (Profile profile : profiles){
+	        	
+				Map<String, Object> summary = profile.getSummary();
+				ArrayList<Map<String, Object>> insightSummaries = new ArrayList<Map<String, Object>>();
+				ArrayList<Insight> insights = Insight.fetchInsightsWithProfileID(datastore, profile.getId(), 0);
+				for (int i=0; i<insights.size(); i++){
+					Insight insight = insights.get(i);
+					insightSummaries.add(insight.getSummary());
+				}
+				
+				summary.put("insights", insightSummaries);
+	        	results.add(summary);
+	        }
 
 			response.put("confirmation", "success");
 			response.put("profiles", results);
@@ -608,7 +629,56 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
+	}
+	
+	
+	public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		allowCORSAccess(req, resp);
+		resp.setContentType("application/json");
 		
+		RequestInfo request = new RequestInfo(req, resp);
+		String resource = request.getResource();
+		Map<String, Object> response = new HashMap<String, Object>();
+		LoginHandler login = checkLogin(response, req); // Check user login
+		
+		
+		// every DELETE request requires a resource identifer:
+		String identifier = request.getResourceIdentifier();
+		if (identifier==null){
+			response.put("confirmation", "fail");
+			response.put("message", "Missing identifier for "+resource.toUpperCase());
+			
+			JSONObject reply = new JSONObject(response);
+			resp.getWriter().print(reply.toString());
+			return;
+		}
+		
+		if (resource.equals("profiles")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Profile profile = Profile.fetchProfile(datastore, identifier);
+	        if (profile != null){
+	        	
+	        	// remove insights first:
+	        	ArrayList<Insight> insights = Insight.fetchInsightsWithProfileID(datastore, profile.getId(), 0);
+	        	for (Insight insight : insights){
+		        	datastore.delete(insight.createEntityVersion().getKey());
+	        	}
+	        			
+	        	datastore.delete(profile.createEntityVersion().getKey());
+	        	
+	        }
+	        
+			response.put("confirmation", "success");
+			response.put("message", "Profile deleted");
+			
+			JSONObject reply = new JSONObject(response);
+			resp.getWriter().print(reply.toString());
+			return;
+	        
+		}
+		
+		
+
 		
 	}
 
