@@ -46,6 +46,9 @@ public class Profile {
 	private ArrayList<String> languages;
 	
 	private String isFeatured;
+	private String profession;
+	private Long points;
+	private String endorsementID;
 	
 	
 	public Profile(){
@@ -67,6 +70,9 @@ public class Profile {
 		setDream(new Text(""));
 		setType("traveler");
 		setAge(0L);
+		setProfession("none");
+		setPoints(0L);
+		setEndorsementID("none");
 		
 		ArrayList<String> temp = new ArrayList<String>();
 		temp.add("none");
@@ -93,6 +99,9 @@ public class Profile {
 		setDream((Text)ent.getProperty("dream"));
 		setImage((String)ent.getProperty("image"));
 		setLanguages((ArrayList<String>)ent.getProperty("languages"));
+		setProfession((String)ent.getProperty("profession"));
+		setPoints((Long)ent.getProperty("points"));
+		setEndorsementID((String)ent.getProperty("endorsementID"));
 	}
 	
 	
@@ -116,6 +125,9 @@ public class Profile {
         p.setProperty("dream", getDream());
         p.setProperty("image", getImage());
         p.setProperty("languages", getLanguages());
+        p.setProperty("profession", getProfession());
+        p.setProperty("points", getPoints());
+        p.setProperty("endorsementID", getEndorsementID());
         return p;
 	}
 	
@@ -139,6 +151,9 @@ public class Profile {
 		summary.put("bio", getBio().getValue());
 		summary.put("dream", getDream().getValue());
 		summary.put("image", getImage());
+		summary.put("profession", getProfession());
+		summary.put("points", getPoints());
+		summary.put("endorsementID", getEndorsementID());
 		
 		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
 		summary.put("languages", workAround);
@@ -199,7 +214,22 @@ public class Profile {
 			if (c.length() > 0)
 				setHomeCountry(c);
 		}
+		
+		if (json.has("profession")){
+			String p = json.getString("profession");
+			if (p.length() > 0)
+				setProfession(p);
+		}
 
+		if (json.has("points"))
+			setAge(Long.parseLong(json.getString("points")));
+		
+		if (json.has("endorsementID")){
+			String eID = json.getString("endorsementID");
+			if (eID.length() > 0)
+				setEndorsementID(eID);
+		}
+		
 		if (json.has("age"))
 			setAge(Long.parseLong(json.getString("age")));
 
@@ -408,6 +438,31 @@ public class Profile {
 	public void setLanguages(ArrayList<String> languages) {
 		this.languages = languages;
 	}
+	
+	public String getProfession() {
+		return profession;
+	}
+
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
+	
+	public Long getPoints() {
+		return points;
+	}
+
+	public void setPoints(Long points) {
+		this.points = points;
+	}
+
+	public String getEndorsementID() {
+		return endorsementID;
+	}
+
+	public void setEndorsementID(String endorsementID) {
+		this.endorsementID = endorsementID;
+	}
+
 
 
 // - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -469,6 +524,9 @@ public class Profile {
 		
 		return profiles;
 	}
+
+
+
 
 
 
