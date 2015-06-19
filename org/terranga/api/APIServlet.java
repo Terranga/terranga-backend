@@ -326,6 +326,25 @@ public class APIServlet extends HttpServlet {
 				resp.getWriter().println(json.toString());
 				return;
 			}
+			
+			
+			String limit = req.getParameter("limit");
+			if (limit==null)
+				limit = "0";
+			
+			ArrayList<Dream> dreams = null;
+			dreams = Dream.fetchDreams(datastore, Integer.parseInt(limit));
+			
+			ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+	        for (Dream dream : dreams)
+	        	results.add(dream.getSummary());
+	        
+	        response.put("confirmation", "success");
+			response.put("dreams", results);
+	        	
+			JSONObject json = new JSONObject(response);
+			resp.getWriter().println(json.toString());
+			return;
 		}
 		
 		
