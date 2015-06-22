@@ -348,6 +348,61 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		
+		if (resource.equals("endorsements")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        String endorsementID = request.getResourceIdentifier();
+	        
+			if (endorsementID != null){
+				Endorsement endorsement = Endorsement.fetchEndorsement(datastore, endorsementID);
+				if (endorsement==null){
+					response.put("confirmation", "fail");
+					response.put("message", "Endorsement "+endorsementID+" not found.");
+			        	
+					JSONObject json = new JSONObject(response);
+					resp.getWriter().println(json.toString());
+					return;
+				}
+				
+				response.put("confirmation", "success");
+				response.put("endorsement", endorsement.getSummary());
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
+			}
+	        
+	        String endorsed = req.getParameter("endorsed");
+	        String endorsedBy = req.getParameter("endorsedBy");
+	        
+			String limit = req.getParameter("limit");
+			if (limit==null)
+				limit = "0";
+	        
+	        ArrayList<Endorsement> endorsements = null;
+	        
+	        if (endorsed != null)
+	        	endorsements = Endorsement.fetchEndorsementsWithEndorsed(datastore, endorsed, Integer.parseInt(limit));
+	        	        
+	        else if (endorsedBy != null)
+	        	endorsements = Endorsement.fetchEndorsementsWithEndorsedBy(datastore, endorsedBy, Integer.parseInt(limit));
+	        
+	        if (endorsements == null)
+	        	endorsements = Endorsement.fetchEndorsements(datastore, 0);
+	        
+	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+	        for (Endorsement endorsement : endorsements)
+	        	results.add(endorsement.getSummary());
+	        
+	        response.put("confirmation", "success");
+			response.put("endorsements", results);
+	        	
+			JSONObject json = new JSONObject(response);
+			resp.getWriter().println(json.toString());
+			return;
+
+		}
+		
+		
 	}
 
 	
