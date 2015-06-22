@@ -691,6 +691,30 @@ public class APIServlet extends HttpServlet {
 			}
 		}
 		
+		if (resource.equals("endorsement")){
+			String body = getBody(req);
+			
+			try{
+				JSONObject json = new JSONObject(body);
+				Endorsement endorsement = new Endorsement();
+				endorsement.update(json);
+				endorsement.save();
+				
+				response.put("confirmation", "success");
+				response.put("endorsement", endorsement.getSummary()); 
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+		}
+		
 	}
 	
 	
