@@ -403,6 +403,60 @@ public class APIServlet extends HttpServlet {
 
 		}
 		
+		if (resource.equals("reviews")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        String reviewID = request.getResourceIdentifier();
+	        
+			if (reviewID != null){
+				Review review = Review.fetchReview(datastore, reviewID);
+				if (review==null){
+					response.put("confirmation", "fail");
+					response.put("message", "Review "+reviewID+" not found.");
+			        	
+					JSONObject json = new JSONObject(response);
+					resp.getWriter().println(json.toString());
+					return;
+				}
+				
+				response.put("confirmation", "success");
+				response.put("review", review.getSummary());
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
+			}
+	        
+	        String reviewed = req.getParameter("reviewed");
+	        String reviewedBy = req.getParameter("reviewedBy");
+	        
+			String limit = req.getParameter("limit");
+			if (limit==null)
+				limit = "0";
+	        
+	        ArrayList<Review> reviews = null;
+	        
+	        if (reviewed != null)
+	        	reviews = Review.fetchReviewsWithReviewed(datastore, reviewed, Integer.parseInt(limit));
+	        	        
+	        else if (reviewedBy != null)
+	        	reviews = Review.fetchReviewsWithReviewedBy(datastore, reviewedBy, Integer.parseInt(limit));
+	        
+	        if (reviews == null)
+	        	reviews = Review.fetchReviews(datastore, Integer.parseInt(limit));
+	        
+	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+	        for (Review review : reviews)
+	        	results.add(review.getSummary());
+	        
+	        response.put("confirmation", "success");
+			response.put("reviews", reviews);
+	        	
+			JSONObject json = new JSONObject(response);
+			resp.getWriter().println(json.toString());
+			return;
+
+		}
+		
 		
 	}
 
