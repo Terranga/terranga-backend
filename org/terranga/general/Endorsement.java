@@ -19,6 +19,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Endorsement {
 	//AUTO GENERATED
@@ -202,6 +205,34 @@ public class Endorsement {
 		return search;
 	}
 		
+	//FETCH ALL ENDORSEMENTS
+	public static ArrayList<Endorsement> fetchEndorsements(DatastoreService datastore, int limit){
+		Query q = new Query("Endorsement").addSort("timestamp", Query.SortDirection.DESCENDING);
+		ArrayList<Endorsement> endorsements = executeQuery(datastore, q, limit);
+		return endorsements;
+	}
 	
+	
+	//FETCH ENDORSEMENTS (endorsed)
+	public static ArrayList<Endorsement> fetchEndorsementsWithEndorsed(DatastoreService datastore, String endorsed,  int limit){
+		Query q = new Query("Endorsement").addSort("timestamp", Query.SortDirection.DESCENDING);
+		
+		Filter endorsedFilter = new FilterPredicate("endorsed", FilterOperator.EQUAL, endorsed);
+		q.setFilter(endorsedFilter);
+		
+		ArrayList<Endorsement> endorsements = executeQuery(datastore, q, limit);
+		return endorsements;
+	}
+	
+	//FETCH ENDORSEMENTS (endorsedBy)
+	public static ArrayList<Endorsement> fetchEndorsementsWithEndorsedBy(DatastoreService datastore, String endorsedBy,  int limit){
+		Query q = new Query("Endorsement").addSort("timestamp", Query.SortDirection.DESCENDING);
+		
+		Filter endorsedByFilter = new FilterPredicate("endorsedBy", FilterOperator.EQUAL, endorsedBy);
+		q.setFilter(endorsedByFilter);
+		
+		ArrayList<Endorsement> endorsements = executeQuery(datastore, q, limit);
+		return endorsements;
+	}
 
 }
