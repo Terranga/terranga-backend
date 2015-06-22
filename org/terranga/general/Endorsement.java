@@ -55,7 +55,7 @@ public class Endorsement {
 	
 	//ENTITY CONSTRUCTOR
 	public Entity createEntityVersion(){
-		Entity e = new Entity("Insight", getId());
+		Entity e = new Entity("Endorsement", getId());
 		e.setProperty("timestamp", getTimestamp());
 		e.setProperty("endorsed", getEndorsed());
 		e.setProperty("endorsedBy", getEndorsedBy());
