@@ -1,5 +1,6 @@
 package org.terranga.general;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,16 @@ import org.json.JSONObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Review {
 	//AUTO GENERATED
@@ -158,4 +168,67 @@ public class Review {
 	public void setDescription(Text description) {
 		this.description = description;
 	}
+	
+	
+	
+//- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
+	
+	//EXECUTE QUERY
+	private static ArrayList<Review> executeQuery(DatastoreService datastore, Query q, int limit){
+		PreparedQuery pq = datastore.prepare(q);
+						
+		FetchOptions options = (limit==0) ? FetchOptions.Builder.withDefaults() : FetchOptions.Builder.withLimit(limit);
+		QueryResultList<Entity> results = pq.asQueryResultList(options); //THE REQUEST
+		ArrayList<Review> reviews = new ArrayList<Review>();
+		for(Entity e : results){
+			reviews.add(new Review(e));
+		}
+		return reviews;
+	}
+				
+	//FETCH SINGLE REVIEW (ID)
+	public static Review fetchReview(DatastoreService datastore, String reviewID){
+		Review search = null;
+		try {
+			Entity ent = datastore.get(KeyFactory.createKey("Review", reviewID));
+			search = new Review(ent);
+		}
+		catch(EntityNotFoundException e){
+		}
+		return search;
+	}
+			
+		//FETCH ALL REVIEWS
+		public static ArrayList<Review> fetchReviews(DatastoreService datastore, int limit){
+			Query q = new Query("Review").addSort("timestamp", Query.SortDirection.DESCENDING);
+			ArrayList<Review> reviews = executeQuery(datastore, q, limit);
+			return reviews;
+		}
+		
+		
+		//FETCH REVIEWS (reviewed)
+		public static ArrayList<Review> fetchReviewsWithReviewed(DatastoreService datastore, String reviewed,  int limit){
+			Query q = new Query("Review").addSort("timestamp", Query.SortDirection.DESCENDING);
+			
+			Filter reviewedFilter = new FilterPredicate("reviewed", FilterOperator.EQUAL, reviewed);
+			q.setFilter(reviewedFilter);
+			
+			ArrayList<Review> reviews = executeQuery(datastore, q, limit);
+			return reviews;
+		}
+		
+		//FETCH REVIEWS (reviewedBy)
+		public static ArrayList<Review> fetchReviewsWithReviewedBy(DatastoreService datastore, String reviewedBy,  int limit){
+			Query q = new Query("Review").addSort("timestamp", Query.SortDirection.DESCENDING);
+			
+			Filter reviewedByFilter = new FilterPredicate("reviewedBy", FilterOperator.EQUAL, reviewedBy);
+			q.setFilter(reviewedByFilter);
+			
+			ArrayList<Review> reviews = executeQuery(datastore, q, limit);
+			return reviews;
+		}	
+	
+	
+	
+	
 }
