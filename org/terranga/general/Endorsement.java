@@ -1,5 +1,6 @@
 package org.terranga.general;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,12 @@ import org.json.JSONObject;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Text;
 
 public class Endorsement {
@@ -54,7 +61,6 @@ public class Endorsement {
 		return e;
 	}	
 	
-	
 	//GET SUMMARY FOR JSON USE
 	public Map<String, Object> getSummary(){
 		Map<String, Object> summary = new HashMap<String, Object>();
@@ -82,8 +88,6 @@ public class Endorsement {
 		return summary;
 	}
 	
-	
-	
 	//UPDATE FROM JSON-SUMMARY
 	public void update(JSONObject json) throws JSONException {
 		if (json.has("endorsed")){
@@ -110,9 +114,7 @@ public class Endorsement {
 
 	public void save(DatastoreService datastore){
 		datastore.put(createEntityVersion());
-	}
-
-	
+	}	
 	
 	//RANDOM STRING GENERATOR
 	public static String randomString(int length){
@@ -173,6 +175,33 @@ public class Endorsement {
 	}
 	
 	
+//- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
+	
+	//EXECUTE QUERY
+	private static ArrayList<Endorsement> executeQuery(DatastoreService datastore, Query q, int limit){
+		PreparedQuery pq = datastore.prepare(q);
+					
+		FetchOptions options = (limit==0) ? FetchOptions.Builder.withDefaults() : FetchOptions.Builder.withLimit(limit);
+		QueryResultList<Entity> results = pq.asQueryResultList(options); //THE REQUEST
+		ArrayList<Endorsement> endorsements = new ArrayList<Endorsement>();
+		for(Entity e : results){
+			endorsements.add(new Endorsement(e));
+		}
+		return endorsements;
+	}
+			
+	//FETCH SINGLE Endorsement (ID)
+	public static Endorsement fetchEndorsement(DatastoreService datastore, String endorsementID){
+		Endorsement search = null;
+		try {
+			Entity ent = datastore.get(KeyFactory.createKey("Endorsement", endorsementID));
+			search = new Endorsement(ent);
+		}
+		catch(EntityNotFoundException e){
+		}
+		return search;
+	}
+		
 	
 
 }
