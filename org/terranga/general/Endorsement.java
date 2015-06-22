@@ -1,8 +1,16 @@
 package org.terranga.general;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
 
 public class Endorsement {
@@ -25,8 +33,87 @@ public class Endorsement {
 		setEndorsedBy("none");
 		setDescription(new Text(""));
 	}
+	
+	//CONSTRUCTOR FROM ENTITY
+	public Endorsement(Entity ent){
+		setId(ent.getKey().getName());
+		setTimestamp((Date)ent.getProperty("timestamp"));
+		setEndorsed((String)ent.getProperty("endorsed"));
+		setEndorsedBy((String)ent.getProperty("endorsedBy"));
+		setDescription((Text)ent.getProperty("description"));
+	}
+	
+	//ENTITY CONSTRUCTOR
+	public Entity createEntityVersion(){
+		Entity e = new Entity("Insight", getId());
+		e.setProperty("timestamp", getTimestamp());
+		e.setProperty("endorsed", getEndorsed());
+		e.setProperty("endorsedBy", getEndorsedBy());
+		e.setProperty("description", getDescription());
+		
+		return e;
+	}	
+	
+	
+	//GET SUMMARY FOR JSON USE
+	public Map<String, Object> getSummary(){
+		Map<String, Object> summary = new HashMap<String, Object>();
+		
+		//AUTO GENERATED
+		summary.put("id", getId());
+		summary.put("timestamp", getTimestamp().toString());
+		
+		//PROFILE ID
+		if(getEndorsed().equals("none"))
+			summary.put("endorsed", "");
+		else
+			summary.put("endorsed", getEndorsed());
+		//CATEGORY TAG
+		if(getEndorsedBy().equals("none"))
+			summary.put("endorsedBy", "");
+		else
+			summary.put("endorsedBy", getEndorsedBy());
+		//DESCRIPTION
+		if(getDescription().getValue().equals("none"))
+			summary.put("description", "");
+		else
+			summary.put("description", getDescription().getValue());
+	
+		return summary;
+	}
+	
+	
+	
+	//UPDATE FROM JSON-SUMMARY
+	public void update(JSONObject json) throws JSONException {
+		if (json.has("endorsed")){
+			String e = json.getString("endorsed");
+			if (e.length() > 0)
+				setEndorsed(e);
+		}
 
+		if (json.has("endorsedBy")){
+			String eb = json.getString("endorsedBy");
+			if (eb.length() > 0)
+				setEndorsedBy(eb);
+		}
+		
+		if (json.has("description"))
+			setDescription(new Text(json.getString("description")));
+	}	
+	
+	//SAVE METHODS
+	public void save(){
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		datastore.put(createEntityVersion());
+	}
 
+	public void save(DatastoreService datastore){
+		datastore.put(createEntityVersion());
+	}
+
+	
+	
 	//RANDOM STRING GENERATOR
 	public static String randomString(int length){
 		String uuid = UUID.randomUUID().toString();
