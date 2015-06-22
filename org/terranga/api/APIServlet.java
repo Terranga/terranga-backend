@@ -770,6 +770,30 @@ public class APIServlet extends HttpServlet {
 			}
 		}
 		
+		if (resource.equals("reviews")){
+			String body = getBody(req);
+			
+			try{
+				JSONObject json = new JSONObject(body);
+				Review review = new Review();
+				review.update(json);
+				review.save();
+				
+				response.put("confirmation", "success");
+				response.put("review", review.getSummary()); 
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+		}
+		
 	}
 	
 	
