@@ -691,7 +691,7 @@ public class APIServlet extends HttpServlet {
 			}
 		}
 		
-		if (resource.equals("endorsement")){
+		if (resource.equals("endorsements")){
 			String body = getBody(req);
 			
 			try{
