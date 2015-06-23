@@ -450,7 +450,7 @@ public class APIServlet extends HttpServlet {
 	        	results.add(review.getSummary());
 	        
 	        response.put("confirmation", "success");
-			response.put("reviews", reviews);
+			response.put("reviews", results);
 	        	
 			JSONObject json = new JSONObject(response);
 			resp.getWriter().println(json.toString());
