@@ -458,6 +458,50 @@ public class APIServlet extends HttpServlet {
 
 		}
 		
+		if (resource.equals("profilePage")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        String pageID = request.getResourceIdentifier();
+	        
+			if (pageID != null){
+				ProfilePage page = ProfilePage.fetchProfilePage(datastore, pageID);
+				if (page==null){
+					response.put("confirmation", "fail");
+					response.put("message", "Page "+pageID+" not found.");
+			        	
+					JSONObject json = new JSONObject(response);
+					resp.getWriter().println(json.toString());
+					return;
+				}
+				
+				response.put("confirmation", "success");
+				response.put("profilePage", page.getSummary());
+		        	
+				JSONObject json = new JSONObject(response);
+				resp.getWriter().println(json.toString());
+				return;
+			}
+	       
+	        
+			String limit = req.getParameter("limit");
+			if (limit==null)
+				limit = "0";
+	        
+	        ArrayList<ProfilePage> pages = null;
+	        pages = ProfilePage.fetchProfilePages(datastore, Integer.parseInt(limit));
+	        
+	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+	        for (ProfilePage page : pages)
+	        	results.add(page.getSummary());
+	        
+	        response.put("confirmation", "success");
+			response.put("profilePages", results);
+	        	
+			JSONObject json = new JSONObject(response);
+			resp.getWriter().println(json.toString());
+			return;
+
+		}
+		
 		
 	}
 
@@ -795,6 +839,30 @@ public class APIServlet extends HttpServlet {
 			}
 		}
 		
+		if (resource.equals("profilePage")){
+			String body = getBody(req);
+			
+			try{
+				JSONObject json = new JSONObject(body);
+				ProfilePage page = new ProfilePage();
+				page.update(json);
+				page.save();
+				
+				response.put("confirmation", "success");
+				response.put("profilePage", page.getSummary()); 
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				JSONObject jsonResponse = new JSONObject(response);
+				resp.getWriter().print(jsonResponse.toString());
+				return;
+			}
+		}
+		
 	}
 	
 	
@@ -875,6 +943,41 @@ public class APIServlet extends HttpServlet {
 		        
 				response.put("confirmation", "success");
 				response.put("dream", dream.getSummary());
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+			}
+		}
+		if (resource.equals("profilePage")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        ProfilePage page = ProfilePage.fetchProfilePage(datastore, identifier);
+	        if (page==null){
+				response.put("confirmation", "fail");
+				response.put("message", "ProfilePage "+identifier+" not found.");
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+	        }
+
+	        
+			String requestBody = getBody(req);
+			try {
+				JSONObject json = new JSONObject(requestBody);
+		        page.update(json);
+		        page.save(datastore);
+		        
+				response.put("confirmation", "success");
+				response.put("profilePage", page.getSummary());
 				
 				JSONObject reply = new JSONObject(response);
 				resp.getWriter().print(reply.toString());
