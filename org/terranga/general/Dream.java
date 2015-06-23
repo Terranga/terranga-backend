@@ -27,6 +27,9 @@ public class Dream {
 	//USER INPUTED
 	private String profileID;
 	private String title;
+	private Long fundraisingGoal;
+	private Long fundraisingCurrent;
+	private Long numContributers;
 	private Text description;
 	
 	//DEFAULT CONSTRUCTOR
@@ -35,6 +38,9 @@ public class Dream {
 		setTimestamp(new Date());
 		setProfileID("none");
 		setTitle("none");
+		setFundraisingGoal(0L);
+		setFundraisingCurrent(0L);
+		setNumContributers(0L);
 		setDescription(new Text(""));
 	}
 	
@@ -44,6 +50,9 @@ public class Dream {
 		setTimestamp((Date)ent.getProperty("timestamp"));	
 		setProfileID((String)ent.getProperty("profileID"));
 		setTitle((String)ent.getProperty("title"));
+		setFundraisingGoal((Long)ent.getProperty("fundraisingGoal"));
+		setFundraisingCurrent((Long)ent.getProperty("fundraisingCurrent"));
+		setNumContributers((Long)ent.getProperty("numContributers"));
 		setDescription((Text)ent.getProperty("description"));
 	}
 	
@@ -53,6 +62,9 @@ public class Dream {
 		d.setProperty("timestamp", getTimestamp());
 		d.setProperty("profileID", getProfileID());
 		d.setProperty("title", getTitle());
+		d.setProperty("fundraisingGoal", getFundraisingGoal());
+		d.setProperty("fundraisingCurrent", getFundraisingCurrent());
+		d.setProperty("numContributers", getNumContributers());
 		d.setProperty("description", getDescription());
 		return d;
 	}
@@ -81,6 +93,10 @@ public class Dream {
 			summary.put("description", "");
 		else
 			summary.put("description", getDescription().getValue());
+		
+		summary.put("fundraisingGoal", Long.toString(getFundraisingGoal()));
+		summary.put("fundraisingCurrent", Long.toString(getFundraisingCurrent()));
+		summary.put("numContributers", Long.toString(getNumContributers()));
 	
 		return summary;
 	}
@@ -102,6 +118,25 @@ public class Dream {
 		
 		if (json.has("description"))
 			setDescription(new Text(json.getString("description")));
+		
+		if (json.has("fundraisingGoal")){
+			String fg = json.getString("fundraisingGoal");
+			if (fg.length() > 0)
+				setFundraisingGoal(Long.parseLong(json.getString("fundraisingGoal")));
+		}
+		
+		if (json.has("fundraisingCurrent")){
+			String fc = json.getString("fundraisingCurrent");
+			if (fc.length() > 0)
+				setFundraisingCurrent(Long.parseLong(json.getString("fundraisingCurrent")));
+		}
+		
+		if (json.has("numContributers")){
+			String nc = json.getString("numContributers");
+			if (nc.length() > 0)
+				setNumContributers(Long.parseLong(json.getString("numContributers")));
+		}
+		
 	}
 	
 	//SAVE METHODS
@@ -164,6 +199,30 @@ public class Dream {
 		this.description = description;
 	}	
 	
+	public Long getFundraisingGoal() {
+		return fundraisingGoal;
+	}
+
+	public void setFundraisingGoal(Long fundraisingGoal) {
+		this.fundraisingGoal = fundraisingGoal;
+	}
+
+	public Long getFundraisingCurrent() {
+		return fundraisingCurrent;
+	}
+
+	public void setFundraisingCurrent(Long fundraisingCurrent) {
+		this.fundraisingCurrent = fundraisingCurrent;
+	}
+
+	public Long getNumContributers() {
+		return numContributers;
+	}
+
+	public void setNumContributers(Long numContributers) {
+		this.numContributers = numContributers;
+	}
+	
 	
 	//- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
 	
@@ -198,5 +257,7 @@ public class Dream {
 			ArrayList<Dream> dreams = executeQuery(datastore, q, limit);
 			return dreams;
 		}
+
+
 		
 }
