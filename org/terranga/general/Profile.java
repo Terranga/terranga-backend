@@ -222,7 +222,7 @@ public class Profile {
 		}
 
 		if (json.has("points"))
-			setAge(Long.parseLong(json.getString("points")));
+			setPoints(Long.parseLong(json.getString("points")));
 		
 		if (json.has("endorsementID")){
 			String eID = json.getString("endorsementID");
