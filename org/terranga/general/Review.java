@@ -31,6 +31,7 @@ public class Review {
 	//USER INPUTED
 	private String reviewedBy;
 	private String reviewed;
+	private Long score;
 	private Text description;
 	
 	
@@ -41,6 +42,7 @@ public class Review {
 		
 		setReviewed("none");
 		setReviewedBy("none");
+		setScore(0L);
 		setDescription(new Text(""));
 	}
 	
@@ -51,6 +53,7 @@ public class Review {
 		setReviewed((String)ent.getProperty("reviewed"));
 		setReviewedBy((String)ent.getProperty("reviewedBy"));
 		setDescription((Text)ent.getProperty("description"));
+		setScore((Long)ent.getProperty("score"));
 	}
 	
 	//ENTITY CONSTRUCTOR
@@ -59,6 +62,7 @@ public class Review {
 		e.setProperty("timestamp", getTimestamp());
 		e.setProperty("reviewed", getReviewed());
 		e.setProperty("reviewedBy", getReviewedBy());
+        e.setProperty("score", getScore());
 		e.setProperty("description", getDescription());
 		
 		return e;
@@ -89,7 +93,9 @@ public class Review {
 			summary.put("description", "");
 		else
 			summary.put("description", getDescription().getValue());
-	
+		
+		summary.put("score", Long.toString(getScore()));
+		
 		return summary;
 	}
 	
@@ -107,8 +113,12 @@ public class Review {
 				setReviewedBy(eb);
 		}
 		
+		if (json.has("score"))
+			setScore(Long.parseLong(json.getString("score")));
+		
 		if (json.has("description"))
 			setDescription(new Text(json.getString("description")));
+		
 	}	
 	
 	//SAVE METHODS
@@ -169,7 +179,14 @@ public class Review {
 		this.description = description;
 	}
 	
-	
+	public Long getScore() {
+		return score;
+	}
+
+	public void setScore(Long score) {
+		this.score = score;
+	}	
+
 	
 //- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
 	
@@ -226,7 +243,6 @@ public class Review {
 			
 			ArrayList<Review> reviews = executeQuery(datastore, q, limit);
 			return reviews;
-		}	
-	
+		}
 	
 }
