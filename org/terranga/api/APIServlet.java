@@ -474,7 +474,7 @@ public class APIServlet extends HttpServlet {
 				}
 				
 				response.put("confirmation", "success");
-				response.put("page", page.getSummary());
+				response.put("profilePage", page.getSummary());
 		        	
 				JSONObject json = new JSONObject(response);
 				resp.getWriter().println(json.toString());
@@ -494,7 +494,7 @@ public class APIServlet extends HttpServlet {
 	        	results.add(page.getSummary());
 	        
 	        response.put("confirmation", "success");
-			response.put("pages", results);
+			response.put("profilePages", results);
 	        	
 			JSONObject json = new JSONObject(response);
 			resp.getWriter().println(json.toString());
@@ -849,7 +849,7 @@ public class APIServlet extends HttpServlet {
 				page.save();
 				
 				response.put("confirmation", "success");
-				response.put("page", page.getSummary()); 
+				response.put("profilePage", page.getSummary()); 
 				JSONObject jsonResponse = new JSONObject(response);
 				resp.getWriter().print(jsonResponse.toString());
 				return;
