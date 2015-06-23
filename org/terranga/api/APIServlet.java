@@ -853,6 +853,42 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
+		
+		if (resource.equals("dreams")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Dream dream = Dream.fetchDream(datastore, identifier);
+	        if (dream==null){
+				response.put("confirmation", "fail");
+				response.put("message", "Dream "+identifier+" not found.");
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+	        }
+
+	        
+			String requestBody = getBody(req);
+			try {
+				JSONObject json = new JSONObject(requestBody);
+		        dream.update(json);
+		        dream.save(datastore);
+		        
+				response.put("confirmation", "success");
+				response.put("dream", dream.getSummary());
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+			}
+		}
 	}
 	
 	
