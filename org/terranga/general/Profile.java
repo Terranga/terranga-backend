@@ -40,7 +40,6 @@ public class Profile {
 	private String image;
 	private String type;
 	private Text bio;
-	private Text dream;
 	private Long age;
 	
 	private ArrayList<String> languages;
@@ -68,7 +67,6 @@ public class Profile {
 		setHomeCountry("none");
 		setImage("XPMHTdp4");
 		setBio(new Text(""));
-		setDream(new Text(""));
 		setType("traveler");
 		setAge(0L);
 		setProfession("none");
@@ -98,7 +96,6 @@ public class Profile {
 		setIsFeatured((String)ent.getProperty("isFeatured"));
 		setAge((Long)ent.getProperty("age"));
 		setBio((Text)ent.getProperty("bio"));
-		setDream((Text)ent.getProperty("dream"));
 		setImage((String)ent.getProperty("image"));
 		setLanguages((ArrayList<String>)ent.getProperty("languages"));
 		setProfession((String)ent.getProperty("profession"));
@@ -125,7 +122,6 @@ public class Profile {
         p.setProperty("homeCity", getHomeCity());
         p.setProperty("age", getAge());
         p.setProperty("bio", getBio());
-        p.setProperty("dream", getDream());
         p.setProperty("image", getImage());
         p.setProperty("languages", getLanguages());
         p.setProperty("profession", getProfession());
@@ -153,7 +149,6 @@ public class Profile {
 		summary.put("age", Long.toString(getAge()));
 //		summary.put("password", getPassword());
 		summary.put("bio", getBio().getValue());
-		summary.put("dream", getDream().getValue());
 		summary.put("image", getImage());
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
@@ -249,9 +244,6 @@ public class Profile {
 
 		if (json.has("bio"))
 			setBio(new Text(json.getString("bio")));
-
-		if (json.has("dream"))
-			setDream(new Text(json.getString("dream")));
 
 		if (json.has("image"))
 			setImage(json.getString("image"));
@@ -432,14 +424,6 @@ public class Profile {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public Text getDream() {
-		return dream;
-	}
-
-	public void setDream(Text dream) {
-		this.dream = dream;
 	}
 	
 	public ArrayList<String> getLanguages() {
