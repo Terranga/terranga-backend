@@ -48,7 +48,6 @@ public class Profile {
 	private String isFeatured;
 	private String profession;
 	private Long points;
-	private String endorsementID;
 	private String gender;
 	
 	
@@ -72,7 +71,6 @@ public class Profile {
 		setAge(0L);
 		setProfession("none");
 		setPoints(0L);
-		setEndorsementID("none");
 		setGender("none");
 		
 		ArrayList<String> temp = new ArrayList<String>();
@@ -105,7 +103,6 @@ public class Profile {
 		setLanguages((ArrayList<String>)ent.getProperty("languages"));
 		setProfession((String)ent.getProperty("profession"));
 		setPoints((Long)ent.getProperty("points"));
-		setEndorsementID((String)ent.getProperty("endorsementID"));
 		setGender((String)ent.getProperty("gender"));
 		setHashtags((ArrayList<String>)ent.getProperty("hashtags"));
 	}
@@ -132,7 +129,6 @@ public class Profile {
         p.setProperty("languages", getLanguages());
         p.setProperty("profession", getProfession());
         p.setProperty("points", getPoints());
-        p.setProperty("endorsementID", getEndorsementID());
         p.setProperty("gender", getGender());
         p.setProperty("hashtags", getHashtags());
         return p;
@@ -159,7 +155,6 @@ public class Profile {
 		summary.put("image", getImage());
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
-		summary.put("endorsementID", getEndorsementID());
 		summary.put("gender", getGender());
 		
 		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
@@ -240,12 +235,6 @@ public class Profile {
 
 		if (json.has("points"))
 			setPoints(Long.parseLong(json.getString("points")));
-		
-		if (json.has("endorsementID")){
-			String eID = json.getString("endorsementID");
-			if (eID.length() > 0)
-				setEndorsementID(eID);
-		}
 		
 		if (json.has("age"))
 			setAge(Long.parseLong(json.getString("age")));
@@ -483,14 +472,6 @@ public class Profile {
 
 	public void setPoints(Long points) {
 		this.points = points;
-	}
-
-	public String getEndorsementID() {
-		return endorsementID;
-	}
-
-	public void setEndorsementID(String endorsementID) {
-		this.endorsementID = endorsementID;
 	}
 	
 	public String getGender() {
