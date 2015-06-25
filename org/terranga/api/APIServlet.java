@@ -144,6 +144,15 @@ public class APIServlet extends HttpServlet {
 				}
 				summary.put("dreams", dreamSummaries);
 				
+				//ADD REVIEWS TO PROFILE SUMMARY
+				ArrayList<Map<String, Object>> reviewSummaries = new ArrayList<Map<String, Object>>();
+				ArrayList<Review> reviews = Review.fetchReviewsWithReviewed(datastore, profile.getId(), 0);
+				for (int i=0; i<reviews.size(); i++){
+					Review review = reviews.get(i);
+					reviewSummaries.add(review.getSummary());
+				}
+				summary.put("reviews", reviewSummaries);
+				
 				
 				
 				response.put("confirmation", "success");
