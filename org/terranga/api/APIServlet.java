@@ -153,6 +153,15 @@ public class APIServlet extends HttpServlet {
 				}
 				summary.put("reviews", reviewSummaries);
 				
+				//ADD ENDORSMEMENTS TO PROFILE SUMMARY
+				ArrayList<Map<String, Object>> endorsementSummaries = new ArrayList<Map<String, Object>>();
+				ArrayList<Endorsement> endorsements = Endorsement.fetchEndorsementsWithEndorsed(datastore, profile.getId(), 0);
+				for (int i=0; i<endorsements.size(); i++){
+					Endorsement endorsement = endorsements.get(i);
+					endorsementSummaries.add(endorsement.getSummary());
+				}
+				summary.put("endorsements", endorsementSummaries);
+				
 				
 				
 				response.put("confirmation", "success");
