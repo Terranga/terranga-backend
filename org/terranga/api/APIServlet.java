@@ -125,14 +125,26 @@ public class APIServlet extends HttpServlet {
 				}
 				
 				Map<String, Object> summary = profile.getSummary();
+				
+				//ADD INSIGHTS TO PROFILE SUMMARY
 				ArrayList<Map<String, Object>> insightSummaries = new ArrayList<Map<String, Object>>();
 				ArrayList<Insight> insights = Insight.fetchInsightsWithProfileID(datastore, profile.getId(), 0);
 				for (int i=0; i<insights.size(); i++){
 					Insight insight = insights.get(i);
 					insightSummaries.add(insight.getSummary());
 				}
-				
 				summary.put("insights", insightSummaries);
+				
+				//ADD DREAMS TO PROFILE SUMMARY
+				ArrayList<Map<String, Object>> dreamSummaries = new ArrayList<Map<String, Object>>();
+				ArrayList<Dream> dreams = Dream.fetchDreamsWithProfileID(datastore, profile.getId(), 0);
+				for (int i=0; i<dreams.size(); i++){
+					Dream dream = dreams.get(i);
+					dreamSummaries.add(dream.getSummary());
+				}
+				summary.put("dreams", dreamSummaries);
+				
+				
 				
 				response.put("confirmation", "success");
 				response.put("profile", summary);

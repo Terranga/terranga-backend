@@ -19,6 +19,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 public class Dream {
 	//AUTO GENERATED
@@ -251,13 +254,22 @@ public class Dream {
 			return d;
 		}
 		
-		//FETCH ALL INSIGHTS
+		//FETCH ALL DREAMS
 		public static ArrayList<Dream> fetchDreams(DatastoreService datastore, int limit){
 			Query q = new Query("Dream").addSort("timestamp", Query.SortDirection.DESCENDING);
 			ArrayList<Dream> dreams = executeQuery(datastore, q, limit);
 			return dreams;
 		}
-
-
+		
+		//FETCH DREAM (profileID)
+		public static ArrayList<Dream> fetchDreamsWithProfileID(DatastoreService datastore, String profileID,  int limit){
+			Query q = new Query("Dream").addSort("timestamp", Query.SortDirection.DESCENDING);
+			
+			Filter profileIDFilter = new FilterPredicate("profileID", FilterOperator.EQUAL, profileID);
+			q.setFilter(profileIDFilter);
+			
+			ArrayList<Dream> dreams = executeQuery(datastore, q, limit);
+			return dreams;
+		}
 		
 }
