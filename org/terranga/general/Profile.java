@@ -43,6 +43,7 @@ public class Profile {
 	private Long age;
 	
 	private ArrayList<String> languages;
+	private ArrayList<String> hashtags;
 	
 	private String isFeatured;
 	private String profession;
@@ -77,6 +78,10 @@ public class Profile {
 		ArrayList<String> temp = new ArrayList<String>();
 		temp.add("none");
 		setLanguages(temp);
+		
+		ArrayList<String> tempHash = new ArrayList<String>();
+		tempHash.add("none");
+		setHashtags(tempHash);
 	}
 	
 	@SuppressWarnings("unchecked") //GO BACK TO THIS!
@@ -102,6 +107,7 @@ public class Profile {
 		setPoints((Long)ent.getProperty("points"));
 		setEndorsementID((String)ent.getProperty("endorsementID"));
 		setGender((String)ent.getProperty("gender"));
+		setHashtags((ArrayList<String>)ent.getProperty("hashtags"));
 	}
 	
 	
@@ -128,6 +134,7 @@ public class Profile {
         p.setProperty("points", getPoints());
         p.setProperty("endorsementID", getEndorsementID());
         p.setProperty("gender", getGender());
+        p.setProperty("hashtags", getHashtags());
         return p;
 	}
 	
@@ -157,6 +164,10 @@ public class Profile {
 		
 		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
 		summary.put("languages", workAround);
+		
+		
+		ArrayList<String> workAroundHash = (getHashtags().contains("none")) ? new ArrayList<String>() : getHashtags();
+		summary.put("hashtags", workAroundHash);
 		
 		return summary;
 	}
@@ -263,6 +274,22 @@ public class Profile {
 				temp.remove("none");
 			
 			setLanguages(temp);
+		}
+		
+		if(json.has("hashtags")){
+			ArrayList<String> temp = new ArrayList<String>();
+			JSONArray list = json.getJSONArray("hashtags");
+			for(int i = 0; i <list.length(); i++){
+				String hashtagID = list.getString(i);
+				if (hashtagID.equals("none") == false)
+					temp.add(hashtagID);
+			}
+			if (temp.size() == 0)
+				temp.add("none");
+			else
+				temp.remove("none");
+			
+			setHashtags(temp);
 		}
 
 	}
@@ -432,6 +459,14 @@ public class Profile {
 
 	public void setLanguages(ArrayList<String> languages) {
 		this.languages = languages;
+	}
+	
+	public ArrayList<String> getHashtags() {
+		return hashtags;
+	}
+
+	public void setHashtags(ArrayList<String> hashtags) {
+		this.hashtags = hashtags;
 	}
 	
 	public String getProfession() {
