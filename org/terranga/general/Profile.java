@@ -49,6 +49,7 @@ public class Profile {
 	private String profession;
 	private Long points;
 	private String endorsementID;
+	private String gender;
 	
 	
 	public Profile(){
@@ -73,6 +74,7 @@ public class Profile {
 		setProfession("none");
 		setPoints(0L);
 		setEndorsementID("none");
+		setGender("none");
 		
 		ArrayList<String> temp = new ArrayList<String>();
 		temp.add("none");
@@ -102,6 +104,7 @@ public class Profile {
 		setProfession((String)ent.getProperty("profession"));
 		setPoints((Long)ent.getProperty("points"));
 		setEndorsementID((String)ent.getProperty("endorsementID"));
+		setGender((String)ent.getProperty("gender"));
 	}
 	
 	
@@ -128,6 +131,7 @@ public class Profile {
         p.setProperty("profession", getProfession());
         p.setProperty("points", getPoints());
         p.setProperty("endorsementID", getEndorsementID());
+        p.setProperty("gender", getGender());
         return p;
 	}
 	
@@ -154,6 +158,7 @@ public class Profile {
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
 		summary.put("endorsementID", getEndorsementID());
+		summary.put("gender", getGender());
 		
 		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
 		summary.put("languages", workAround);
@@ -219,6 +224,12 @@ public class Profile {
 			String p = json.getString("profession");
 			if (p.length() > 0)
 				setProfession(p);
+		}
+		
+		if (json.has("gender")){
+			String g = json.getString("gender");
+			if (g.length() > 0)
+				setGender(g);
 		}
 
 		if (json.has("points"))
@@ -462,8 +473,14 @@ public class Profile {
 	public void setEndorsementID(String endorsementID) {
 		this.endorsementID = endorsementID;
 	}
+	
+	public String getGender() {
+		return gender;
+	}
 
-
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
 // - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - 
 	
@@ -524,10 +541,5 @@ public class Profile {
 		
 		return profiles;
 	}
-
-
-
-
-
 
 }
