@@ -39,7 +39,6 @@ public class Profile {
 	private String homeCountry;
 	private String image;
 	private String type;
-	private Text bio;
 	private Long age;
 	
 	private ArrayList<String> languages;
@@ -67,7 +66,6 @@ public class Profile {
 		setHomeCity("none");
 		setHomeCountry("none");
 		setImage("XPMHTdp4");
-		setBio(new Text(""));
 		setType("traveler");
 		setAge(0L);
 		setProfession("none");
@@ -103,7 +101,6 @@ public class Profile {
 		setType((String)ent.getProperty("type"));
 		setIsFeatured((String)ent.getProperty("isFeatured"));
 		setAge((Long)ent.getProperty("age"));
-		setBio((Text)ent.getProperty("bio"));
 		setImage((String)ent.getProperty("image"));
 		setLanguages((ArrayList<String>)ent.getProperty("languages"));
 		setProfession((String)ent.getProperty("profession"));
@@ -130,7 +127,6 @@ public class Profile {
         p.setProperty("city", getCity());
         p.setProperty("homeCity", getHomeCity());
         p.setProperty("age", getAge());
-        p.setProperty("bio", getBio());
         p.setProperty("image", getImage());
         p.setProperty("languages", getLanguages());
         p.setProperty("profession", getProfession());
@@ -158,7 +154,6 @@ public class Profile {
 		summary.put("isFeatured", getIsFeatured());
 		summary.put("age", Long.toString(getAge()));
 //		summary.put("password", getPassword());
-		summary.put("bio", getBio().getValue());
 		summary.put("image", getImage());
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
@@ -252,8 +247,6 @@ public class Profile {
 		if (json.has("type"))
 			setType(json.getString("type"));
 
-		if (json.has("bio"))
-			setBio(new Text(json.getString("bio")));
 
 		if (json.has("image"))
 			setImage(json.getString("image"));
@@ -443,15 +436,6 @@ public class Profile {
 		this.age = age;
 	}
 
-
-	public Text getBio() {
-		return bio;
-	}
-
-	public void setBio(Text bio) {
-		this.bio = bio;
-	}
-
 	public String getImage() {
 		return image;
 	}
@@ -506,6 +490,14 @@ public class Profile {
 
 	public void setGender(String gender) {
 		this.gender = gender;
+	}
+	
+	public ArrayList<String> getImages() {
+		return images;
+	}
+
+	public void setImages(ArrayList<String> images) {
+		this.images = images;
 	}
 
 // - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -566,14 +558,6 @@ public class Profile {
 		}
 		
 		return profiles;
-	}
-
-	public ArrayList<String> getImages() {
-		return images;
-	}
-
-	public void setImages(ArrayList<String> images) {
-		this.images = images;
 	}
 
 }
