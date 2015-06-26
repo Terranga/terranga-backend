@@ -44,6 +44,7 @@ public class Profile {
 	
 	private ArrayList<String> languages;
 	private ArrayList<String> hashtags;
+	private ArrayList<String> images;
 	
 	private String isFeatured;
 	private String profession;
@@ -80,6 +81,10 @@ public class Profile {
 		ArrayList<String> tempHash = new ArrayList<String>();
 		tempHash.add("none");
 		setHashtags(tempHash);
+		
+		ArrayList<String> tempImages = new ArrayList<String>();
+		tempImages.add("none");
+		setImages(tempImages);
 	}
 	
 	@SuppressWarnings("unchecked") //GO BACK TO THIS!
@@ -105,6 +110,7 @@ public class Profile {
 		setPoints((Long)ent.getProperty("points"));
 		setGender((String)ent.getProperty("gender"));
 		setHashtags((ArrayList<String>)ent.getProperty("hashtags"));
+		setImages((ArrayList<String>)ent.getProperty("images"));
 	}
 	
 	
@@ -131,6 +137,7 @@ public class Profile {
         p.setProperty("points", getPoints());
         p.setProperty("gender", getGender());
         p.setProperty("hashtags", getHashtags());
+        p.setProperty("images", getImages());
         return p;
 	}
 	
@@ -163,6 +170,9 @@ public class Profile {
 		
 		ArrayList<String> workAroundHash = (getHashtags().contains("none")) ? new ArrayList<String>() : getHashtags();
 		summary.put("hashtags", workAroundHash);
+		
+		ArrayList<String> workAroundImages = (getImages().contains("none")) ? new ArrayList<String>() : getImages();
+		summary.put("images", workAroundImages);
 		
 		return summary;
 	}
@@ -279,6 +289,22 @@ public class Profile {
 				temp.remove("none");
 			
 			setHashtags(temp);
+		}
+		
+		if(json.has("images")){
+			ArrayList<String> temp = new ArrayList<String>();
+			JSONArray list = json.getJSONArray("images");
+			for(int i = 0; i <list.length(); i++){
+				String imagesID = list.getString(i);
+				if (imagesID.equals("none") == false)
+					temp.add(imagesID);
+			}
+			if (temp.size() == 0)
+				temp.add("none");
+			else
+				temp.remove("none");
+			
+			setImages(temp);
 		}
 
 	}
@@ -540,6 +566,14 @@ public class Profile {
 		}
 		
 		return profiles;
+	}
+
+	public ArrayList<String> getImages() {
+		return images;
+	}
+
+	public void setImages(ArrayList<String> images) {
+		this.images = images;
 	}
 
 }
