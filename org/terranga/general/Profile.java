@@ -44,6 +44,7 @@ public class Profile {
 	private ArrayList<String> languages;
 	private ArrayList<String> hashtags;
 	private ArrayList<String> images;
+	private ArrayList<String> bio;
 	
 	private String isFeatured;
 	private String profession;
@@ -83,6 +84,10 @@ public class Profile {
 		ArrayList<String> tempImages = new ArrayList<String>();
 		tempImages.add("none");
 		setImages(tempImages);
+		
+		ArrayList<String> tempBio = new ArrayList<String>();
+		tempBio.add("none");
+		setBio(tempBio);
 	}
 	
 	@SuppressWarnings("unchecked") //GO BACK TO THIS!
@@ -108,6 +113,7 @@ public class Profile {
 		setGender((String)ent.getProperty("gender"));
 		setHashtags((ArrayList<String>)ent.getProperty("hashtags"));
 		setImages((ArrayList<String>)ent.getProperty("images"));
+		setBio((ArrayList<String>)ent.getProperty("bio"));
 	}
 	
 	
@@ -134,6 +140,7 @@ public class Profile {
         p.setProperty("gender", getGender());
         p.setProperty("hashtags", getHashtags());
         p.setProperty("images", getImages());
+        p.setProperty("bio", getBio());
         return p;
 	}
 	
@@ -168,6 +175,9 @@ public class Profile {
 		
 		ArrayList<String> workAroundImages = (getImages().contains("none")) ? new ArrayList<String>() : getImages();
 		summary.put("images", workAroundImages);
+		
+		ArrayList<String> workAroundBio = (getBio().contains("none")) ? new ArrayList<String>() : getBio();	
+		summary.put("bio", workAroundBio);
 		
 		return summary;
 	}
@@ -298,6 +308,22 @@ public class Profile {
 				temp.remove("none");
 			
 			setImages(temp);
+		}
+		
+		if(json.has("bio")){
+			ArrayList<String> temp = new ArrayList<String>();
+			JSONArray list = json.getJSONArray("bio");
+			for(int i = 0; i <list.length(); i++){
+				String bioID = list.getString(i);
+				if (bioID.equals("none") == false)
+					temp.add(bioID);
+			}
+			if (temp.size() == 0)
+				temp.add("none");
+			else
+				temp.remove("none");
+			
+			setBio(temp);
 		}
 
 	}
@@ -498,6 +524,14 @@ public class Profile {
 
 	public void setImages(ArrayList<String> images) {
 		this.images = images;
+	}
+	
+	public ArrayList<String> getBio() {
+		return bio;
+	}
+
+	public void setBio(ArrayList<String> bio) {
+		this.bio = bio;
 	}
 
 // - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - 
