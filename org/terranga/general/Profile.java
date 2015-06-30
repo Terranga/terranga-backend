@@ -66,7 +66,7 @@ public class Profile {
 		setCountry("none");
 		setHomeCity("none");
 		setHomeCountry("none");
-		setImage("XPMHTdp4");
+		setImage("XPMHTdp4");//Change for terranga logo
 		setType("traveler");
 		setAge(0L);
 		setProfession("none");

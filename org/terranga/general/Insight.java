@@ -32,6 +32,8 @@ public class Insight {
 	private String profileID;
 	private String categoryTag;
 	private Text description;
+	private Text longDescription;
+
 	
 	//DEFAULT CONSTRUCTOR
 	public Insight(){
@@ -41,6 +43,7 @@ public class Insight {
 		setProfileID("none");
 		setCategoryTag("none");
 		setDescription(new Text(""));
+		setLongDescription(new Text(""));
 	}
 	
 	//CONSTRUCTOR FROM ENTITY
@@ -51,6 +54,8 @@ public class Insight {
 		setProfileID((String)ent.getProperty("profileID"));
 		setCategoryTag((String)ent.getProperty("categoryTag"));
 		setDescription((Text)ent.getProperty("description"));
+		setLongDescription((Text)ent.getProperty("longDescription"));
+
 	}
 	
 	//ENTITY CONSTRUCTOR
@@ -61,6 +66,7 @@ public class Insight {
 		i.setProperty("profileID", getProfileID());
 		i.setProperty("categoryTag", getCategoryTag());
 		i.setProperty("description", getDescription());
+		i.setProperty("longDescription", getLongDescription());
 		
 		
 		return i;
@@ -89,6 +95,11 @@ public class Insight {
 			summary.put("description", "");
 		else
 			summary.put("description", getDescription().getValue());
+		
+		if(getLongDescription().getValue().equals("none"))
+			summary.put("longDescription", "");
+		else
+			summary.put("longDescription", getLongDescription().getValue());
 	
 		return summary;
 	}
@@ -109,6 +120,9 @@ public class Insight {
 		
 		if (json.has("description"))
 			setDescription(new Text(json.getString("description")));
+		
+		if (json.has("longDescription"))
+			setLongDescription(new Text(json.getString("longDescription")));
 	}
 	
 	//SAVE METHODS
@@ -168,6 +182,14 @@ public class Insight {
 
 	public void setDescription(Text description) {
 		this.description = description;
+	}
+	
+	public Text getLongDescription() {
+		return longDescription;
+	}
+
+	public void setLongDescription(Text longDescription) {
+		this.longDescription = longDescription;
 	}
 
 

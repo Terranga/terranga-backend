@@ -34,6 +34,7 @@ public class Dream {
 	private Long fundraisingCurrent;
 	private Long numContributers;
 	private Text description;
+	private Text longDescription;
 	
 	//DEFAULT CONSTRUCTOR
 	public Dream(){
@@ -45,6 +46,7 @@ public class Dream {
 		setFundraisingCurrent(0L);
 		setNumContributers(0L);
 		setDescription(new Text(""));
+		setLongDescription(new Text(""));
 	}
 	
 	//CONSTRUCTOR FROM ENTITY
@@ -57,6 +59,7 @@ public class Dream {
 		setFundraisingCurrent((Long)ent.getProperty("fundraisingCurrent"));
 		setNumContributers((Long)ent.getProperty("numContributers"));
 		setDescription((Text)ent.getProperty("description"));
+		setLongDescription((Text)ent.getProperty("longDescription"));
 	}
 	
 	//ENTITY CONSTRUCTOR
@@ -69,6 +72,7 @@ public class Dream {
 		d.setProperty("fundraisingCurrent", getFundraisingCurrent());
 		d.setProperty("numContributers", getNumContributers());
 		d.setProperty("description", getDescription());
+		d.setProperty("longDescription", getLongDescription());
 		return d;
 	}
 	
@@ -97,13 +101,17 @@ public class Dream {
 		else
 			summary.put("description", getDescription().getValue());
 		
+		if(getLongDescription().getValue().equals("none"))
+			summary.put("longDescription", "");
+		else
+			summary.put("longDescription", getLongDescription().getValue());
+		
 		summary.put("fundraisingGoal", Long.toString(getFundraisingGoal()));
 		summary.put("fundraisingCurrent", Long.toString(getFundraisingCurrent()));
 		summary.put("numContributers", Long.toString(getNumContributers()));
 	
 		return summary;
 	}
-	
 	
 	//UPDATE FROM JSON-SUMMARY
 	public void update(JSONObject json) throws JSONException {
@@ -121,6 +129,9 @@ public class Dream {
 		
 		if (json.has("description"))
 			setDescription(new Text(json.getString("description")));
+		
+		if (json.has("longDescription"))
+			setLongDescription(new Text(json.getString("longDescription")));
 		
 		if (json.has("fundraisingGoal")){
 			String fg = json.getString("fundraisingGoal");
@@ -226,6 +237,13 @@ public class Dream {
 		this.numContributers = numContributers;
 	}
 	
+	public Text getLongDescription() {
+		return longDescription;
+	}
+
+	public void setLongDescription(Text longDescription) {
+		this.longDescription = longDescription;
+	}
 	
 	//- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
 	
@@ -271,5 +289,4 @@ public class Dream {
 			ArrayList<Dream> dreams = executeQuery(datastore, q, limit);
 			return dreams;
 		}
-		
 }

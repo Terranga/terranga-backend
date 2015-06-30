@@ -72,8 +72,9 @@ public class APIServlet extends HttpServlet {
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        //Endorsement.fetchEndorsements(datastore, 0);
 //	        Insight.fetchInsightsWithProfileID(datastore, "123123", 0);	  
-	        //Endorsement.fetchEndorsementsWithEndorsed(datastore, "1", 0);
-	        Review.fetchReviewsWithReviewed(datastore, "1", 0);
+//	        Endorsement.fetchEndorsementsWithEndorsed(datastore, "1", 0);
+//	        Review.fetchReviewsWithReviewed(datastore, "1", 0);
+//	        Dream.fetchDreamsWithProfileID(datastore, "123", 0);
 	        
 		}
 		
