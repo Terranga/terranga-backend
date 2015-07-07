@@ -70,6 +70,10 @@ public class APIServlet extends HttpServlet {
 		
 		if (resource.equals("test")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Profile.fetchProfiles(datastore, 0);
+	        
+	        
+	        
 	        //Endorsement.fetchEndorsements(datastore, 0);
 //	        Insight.fetchInsightsWithProfileID(datastore, "123123", 0);	  
 //	        Endorsement.fetchEndorsementsWithEndorsed(datastore, "1", 0);

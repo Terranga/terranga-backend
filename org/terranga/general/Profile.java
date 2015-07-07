@@ -41,6 +41,9 @@ public class Profile {
 	private String type;
 	private Long age;
 	
+	private String stripeId;
+	private String cardInfo;
+	
 	private ArrayList<String> languages;
 	private ArrayList<String> hashtags;
 	private ArrayList<String> images;
@@ -57,6 +60,7 @@ public class Profile {
 		setTimestamp(new Date());
 		
 		setFirstName("none");
+		setStripeId("none");
 		setLastName("none");
 		setEmail("none");
 		setPassword("none");
@@ -72,6 +76,7 @@ public class Profile {
 		setProfession("none");
 		setPoints(0L);
 		setGender("none");
+		setCardInfo("none");
 		
 		ArrayList<String> temp = new ArrayList<String>();
 		temp.add("none");
@@ -114,6 +119,8 @@ public class Profile {
 		setHashtags((ArrayList<String>)ent.getProperty("hashtags"));
 		setImages((ArrayList<String>)ent.getProperty("images"));
 		setBio((ArrayList<String>)ent.getProperty("bio"));
+		setStripeId((String)ent.getProperty("stripeId"));
+		setCardInfo((String)ent.getProperty("cardInfo"));
 	}
 	
 	
@@ -141,6 +148,8 @@ public class Profile {
         p.setProperty("hashtags", getHashtags());
         p.setProperty("images", getImages());
         p.setProperty("bio", getBio());
+        p.setProperty("stripeId", getStripeId());
+        p.setProperty("cardInfo", getCardInfo());
         return p;
 	}
 	
@@ -165,6 +174,8 @@ public class Profile {
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
 		summary.put("gender", getGender());
+		summary.put("cardInfo", getCardInfo());
+		summary.put("stripeId", getStripeId());
 		
 		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
 		summary.put("languages", workAround);
@@ -212,6 +223,19 @@ public class Profile {
 			if (p.length() > 0)
 				setPhone(p);
 		}
+
+		if (json.has("stripeId")){
+			String p = json.getString("stripeId");
+			if (p.length() > 0)
+				setStripeId(p);
+		}
+		
+		if (json.has("cardInfo")){
+			String p = json.getString("cardInfo");
+			if (p.length() > 0)
+				setCardInfo(p);
+		}
+
 
 		if (json.has("city")){
 			String c = json.getString("city");
@@ -534,6 +558,24 @@ public class Profile {
 		this.bio = bio;
 	}
 
+	public String getStripeId() {
+		return stripeId;
+	}
+
+	public void setStripeId(String stripeId) {
+		this.stripeId = stripeId;
+	}
+	
+	public String getCardInfo() {
+		return cardInfo;
+	}
+
+	public void setCardInfo(String cardInfo) {
+		this.cardInfo = cardInfo;
+	}
+
+
+	
 // - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - 
 	
 	
@@ -593,5 +635,7 @@ public class Profile {
 		
 		return profiles;
 	}
+
+
 
 }
