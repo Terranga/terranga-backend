@@ -99,9 +99,10 @@ public class StripeServlet extends HttpServlet {
 		
 		// Apply stripe credit card to Profile account
 		if (resource.equals("card")){ 
-//			String requestBody = getBody(req);
 			
-			LoginHandler login = new LoginHandler(req);
+			Map<String, Object> response = new HashMap<String, Object>();
+			LoginHandler login = checkLogin(response, req); // Check user login
+			
 			if (login.getStatus() != 2){ // not logged in or unregistered. abort.
 				resp.setContentType("text/plain");
 				resp.getWriter().print("User not logged in or unregistered.");
@@ -141,17 +142,9 @@ public class StripeServlet extends HttpServlet {
 				profile.save();
 				
 				resp.sendRedirect("/site/account");
-
-//				response.put("confirmation", "success");
-//				response.put("profile", profile.getSummary());
-//				JSONObject pkg = new JSONObject(response);
-//				resp.getWriter().println(pkg.toString());
 				return;
 
 			}
-//			catch (JSONException e){
-//				exception = e;
-//			}
 			catch(CardException e){
 				exception = e;
 			} 
@@ -173,11 +166,6 @@ public class StripeServlet extends HttpServlet {
 				resp.getWriter().print("ERROR: "+exception.getMessage());
 				return;
 				
-//				response.put("confirmation", "fail");
-//				response.put("message", exception.getMessage());
-//				JSONObject pkg = new JSONObject(response);
-//				resp.getWriter().println(pkg.toString());
-//				return;
 			}
 		}
 		
