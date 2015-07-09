@@ -43,11 +43,11 @@ public class SiteServlet extends HttpServlet {
             return;
 		}
 		
-		String userAgent = req.getHeader("User-Agent").toLowerCase();
-		if (userAgent.contains("iphone")==true || userAgent.contains("android")==true){
-			resp.sendRedirect("/mobile/home");
-			return;
-		}
+//		String userAgent = req.getHeader("User-Agent").toLowerCase();
+//		if (userAgent.contains("iphone")==true || userAgent.contains("android")==true){
+//			resp.sendRedirect("/mobile/home");
+//			return;
+//		}
 		
 
 		

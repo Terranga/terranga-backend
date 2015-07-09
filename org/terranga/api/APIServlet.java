@@ -65,6 +65,47 @@ public class APIServlet extends HttpServlet {
 		if (login.getStatus() == 2){
 			Map<String, Object> currentUserSummary = login.getProfile().getSummary();
 			currentUserSummary.put("loggedIn", "yes");
+			
+			
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			
+			//ADD INSIGHTS TO PROFILE SUMMARY
+			ArrayList<Map<String, Object>> insightSummaries = new ArrayList<Map<String, Object>>();
+			ArrayList<Insight> insights = Insight.fetchInsightsWithProfileID(datastore, login.getProfile().getId(), 0);
+			for (int i=0; i<insights.size(); i++){
+				Insight insight = insights.get(i);
+				insightSummaries.add(insight.getSummary());
+			}
+			currentUserSummary.put("insights", insightSummaries);
+			
+			//ADD DREAMS TO PROFILE SUMMARY
+			ArrayList<Map<String, Object>> dreamSummaries = new ArrayList<Map<String, Object>>();
+			ArrayList<Dream> dreams = Dream.fetchDreamsWithProfileID(datastore, login.getProfile().getId(), 0);
+			for (int i=0; i<dreams.size(); i++){
+				Dream dream = dreams.get(i);
+				dreamSummaries.add(dream.getSummary());
+			}
+			currentUserSummary.put("dreams", dreamSummaries);
+			
+			//ADD REVIEWS TO PROFILE SUMMARY
+			ArrayList<Map<String, Object>> reviewSummaries = new ArrayList<Map<String, Object>>();
+			ArrayList<Review> reviews = Review.fetchReviewsWithReviewed(datastore, login.getProfile().getId(), 0);
+			for (int i=0; i<reviews.size(); i++){
+				Review review = reviews.get(i);
+				reviewSummaries.add(review.getSummary());
+			}
+			currentUserSummary.put("reviews", reviewSummaries);
+			
+			//ADD ENDORSMEMENTS TO PROFILE SUMMARY
+			ArrayList<Map<String, Object>> endorsementSummaries = new ArrayList<Map<String, Object>>();
+			ArrayList<Endorsement> endorsements = Endorsement.fetchEndorsementsWithEndorsed(datastore, login.getProfile().getId(), 0);
+			for (int i=0; i<endorsements.size(); i++){
+				Endorsement endorsement = endorsements.get(i);
+				endorsementSummaries.add(endorsement.getSummary());
+			}
+			currentUserSummary.put("endorsements", endorsementSummaries);
+			
+			
 			response.put("currentUser", currentUserSummary);
 		}
 		
