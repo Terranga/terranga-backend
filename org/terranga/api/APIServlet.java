@@ -1146,6 +1146,34 @@ public class APIServlet extends HttpServlet {
 	        
 		}
 		
+		if (resource.equals("insights")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Insight insight = Insight.fetchInsight(datastore, identifier);
+	        if (insight != null)
+	        	datastore.delete(insight.createEntityVersion().getKey());
+	        
+			response.put("confirmation", "success");
+			response.put("message", "Insight deleted");
+			
+			JSONObject reply = new JSONObject(response);
+			resp.getWriter().print(reply.toString());
+			return;
+		}
+		
+		if (resource.equals("dreams")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Dream dream = Dream.fetchDream(datastore, identifier);
+	        if (dream != null)
+	        	datastore.delete(dream.createEntityVersion().getKey());
+	        
+			response.put("confirmation", "success");
+			response.put("message", "Dream deleted");
+			
+			JSONObject reply = new JSONObject(response);
+			resp.getWriter().print(reply.toString());
+			return;
+		}
+		
 		
 
 		
