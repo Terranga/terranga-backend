@@ -158,22 +158,29 @@ public class Profile {
 		summary.put("id", getId());
 		summary.put("timestamp", getTimestamp().toString());
 		
-		summary.put("firstName", getFirstName());
-		summary.put("type", getType());
-		summary.put("city", getCity());
-		summary.put("country", getCountry());
-		summary.put("homeCity", getHomeCity());
-		summary.put("homeCountry", getHomeCountry());
-		summary.put("lastName", getLastName());
-		summary.put("email", getEmail());
-		summary.put("phone", getPhone());
-		summary.put("isFeatured", getIsFeatured());
+		summary.put("firstName", (getFirstName().equals("none")) ? "" : getFirstName());
+		summary.put("type", (getType().equals("none")) ? "" : getType());
+		summary.put("city", (getCity().equals("none")) ? "" : getCity());
+		summary.put("country", (getCountry().equals("none")) ? "" : getCountry());
+		summary.put("homeCity", (getHomeCity().equals("none")) ? "" : getHomeCity());
+		summary.put("homeCountry", (getHomeCountry().equals("none")) ? "" : getHomeCountry());
+		summary.put("lastName", (getLastName().equals("none")) ? "" : getLastName());
+		summary.put("email", (getEmail().equals("none")) ? "" : getEmail());
+		summary.put("phone", (getPhone().equals("none")) ? "" : getPhone());
+		summary.put("isFeatured", (getIsFeatured().equals("none")) ? "" : getIsFeatured());
+		summary.put("image", (getImage().equals("none")) ? "" : getImage());
+		summary.put("profession", (getProfession().equals("none")) ? "" : getProfession());
+		summary.put("gender", (getGender().equals("none")) ? "" : getGender());
+		summary.put("stripeId", (getStripeId().equals("none")) ? "" : getStripeId());
 		summary.put("age", Long.toString(getAge()));
-		summary.put("image", getImage());
-		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
-		summary.put("gender", getGender());
 		
+		// Arrays:
+		summary.put("languages", (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages());
+		summary.put("hashtags", (getHashtags().contains("none")) ? new ArrayList<String>() : getHashtags());
+		summary.put("images", (getImages().contains("none")) ? new ArrayList<String>() : getImages());
+		summary.put("bio", (getBio().contains("none")) ? new ArrayList<String>() : getBio());
+
 		try {
 			JSONObject cardJson = new JSONObject(getCardInfo());
 			summary.put("cardInfo", cardJson);
@@ -181,21 +188,6 @@ public class Profile {
 		catch (JSONException e){
 			
 		}
-		
-		summary.put("stripeId", getStripeId());
-		
-		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
-		summary.put("languages", workAround);
-		
-		
-		ArrayList<String> workAroundHash = (getHashtags().contains("none")) ? new ArrayList<String>() : getHashtags();
-		summary.put("hashtags", workAroundHash);
-		
-		ArrayList<String> workAroundImages = (getImages().contains("none")) ? new ArrayList<String>() : getImages();
-		summary.put("images", workAroundImages);
-		
-		ArrayList<String> workAroundBio = (getBio().contains("none")) ? new ArrayList<String>() : getBio();	
-		summary.put("bio", workAroundBio);
 		
 		return summary;
 	}
