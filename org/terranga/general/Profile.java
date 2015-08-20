@@ -174,7 +174,15 @@ public class Profile {
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
 		summary.put("gender", getGender());
-		summary.put("cardInfo", getCardInfo());
+		
+		try {
+			JSONObject cardJson = new JSONObject(getCardInfo());
+			summary.put("cardInfo", cardJson);
+		}
+		catch (JSONException e){
+			
+		}
+		
 		summary.put("stripeId", getStripeId());
 		
 		ArrayList<String> workAround = (getLanguages().contains("none")) ? new ArrayList<String>() : getLanguages();
