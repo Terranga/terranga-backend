@@ -1,12 +1,10 @@
 package org.terranga.general;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -24,275 +22,345 @@ import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Text;
 
+import org.json.*;
+
 
 public class Message {
 	
-	//AUTO GENERATED
+	// auto-generated:
 	private String id;
 	private Date timestamp;
-	private String threadID;
-		
-	//USER INPUTED
-	private String senderID;
-	private String recipientID;
+
+	private String profile;
+	private String recipient;
 	private String subject;
-	private Text body;
+	private String thread;
+	private String isMostRecent;
+	private Text content;
+	private ArrayList<String> participants;
+	private ArrayList<String> read; // when one of the participants opens message, his id number goes in this array
 
-	//DEFAULT CONSTRUCTOR
-	public Message(){
-		//AUTO GENERATED
-		setId(randomString(8));
-		setTimestamp(new Date());
-		setThreadID(randomString(8));
-		
-		//USER INPUTED
-		setSenderID("none");
-		setRecipientID("none");
-		setSubject("none");
-		setBody(new Text(""));
-	}
-
-	public Message(String thread){
-		//AUTO GENERATED
-		setId(randomString(8));
-		setTimestamp(new Date());
-		setThreadID(thread);
-		
-		//USER INPUTED
-		setSenderID("none");
-		setRecipientID("none");
-		setSubject("none");
-		setBody(new Text(""));
-	}
 	
-	//CREATE PROFILE FROM ENTITY
+	public Message(){
+		setId(randomString(8));
+		setTimestamp(new Date());
+		
+		setProfile("none");
+		setRecipient("none");
+		setSubject("none");
+		setThread("none");
+		setIsMostRecent("yes");
+		setContent(new Text(""));
+		
+		ArrayList<String> a = new ArrayList<String>();
+		a.add("none");
+		setParticipants(a);
+		
+		ArrayList<String> r = new ArrayList<String>();
+		r.add("none");
+		setRead(r);
+
+	}
+
+	
+	@SuppressWarnings("unchecked")
 	public Message(Entity ent){
 		setId(ent.getKey().getName());
 		setTimestamp((Date)ent.getProperty("timestamp"));
-		setThreadID((String)ent.getProperty("threadID"));
-		
-		setSenderID((String)ent.getProperty("senderID"));
-		setRecipientID((String)ent.getProperty("recipientID"));
+		setProfile((String)ent.getProperty("profile"));
+		setRecipient((String)ent.getProperty("recipient"));
 		setSubject((String)ent.getProperty("subject"));
-		setBody((Text)ent.getProperty("body"));
+		setThread((String)ent.getProperty("thread"));
+		setIsMostRecent((String)ent.getProperty("isMostRecent"));
+		setContent((Text)ent.getProperty("content"));
+		setParticipants((ArrayList<String>)ent.getProperty("participants"));
+		setRead((ArrayList<String>)ent.getProperty("read"));
 	}
 	
-	//CREATE ENTITY FROM PROFILE
 	public Entity createEntityVersion(){
-		Entity m = new Entity("Message", getId()); 
-		m.setProperty("timestamp", getTimestamp());
-		m.setProperty("threadID", getThreadID());
-		
-		m.setProperty("senderID", getSenderID());
-		m.setProperty("recipientID", getRecipientID());
-		m.setProperty("subject", getSubject());
-		m.setProperty("body", getBody());
-		return m;
+        Entity p = new Entity("Message", getId());
+        p.setProperty("timestamp", getTimestamp());
+        p.setProperty("profile", getProfile());
+        p.setProperty("recipient", getRecipient());
+        p.setProperty("subject", getSubject());
+        p.setProperty("isMostRecent", getIsMostRecent());
+        p.setProperty("thread", getThread());
+        p.setProperty("content", getContent());
+        p.setProperty("participants", getParticipants());
+        p.setProperty("read", getRead());
+        return p;
 	}
-		
+	
 	
 	public Map<String, Object> getSummary(){
 		Map<String, Object> summary = new HashMap<String, Object>();
 		summary.put("id", getId());
-		summary.put("timestamp", getTimestamp());
-		summary.put("threadID", getThreadID());
-		
-		summary.put("senderID", getSenderID());
-		summary.put("recipientID", getRecipientID());
+		summary.put("timestamp", getTimestamp().toString());
+		summary.put("profile", getProfile());
+		summary.put("recipient", getRecipient());
 		summary.put("subject", getSubject());
-		summary.put("body", getBody().getValue());
-
+		summary.put("isMostRecent", getIsMostRecent());
+		summary.put("thread", getThread());
+		summary.put("content", getContent().getValue());
+		summary.put("participants", getParticipants());
+		summary.put("read", getRead());
 		return summary;
-	}	
-	
-	public void update(JSONObject json) throws JSONException{
-		if(json.has("threadID"))
-			setThreadID(json.getString("threadID"));
-		
-		if(json.has("senderID"))
-			setSenderID(json.getString("senderID"));
-		
-		if(json.has("recipientID"))
-			setRecipientID(json.getString("recipientID"));
-		
-		if(json.has("senderID"))
-			setSenderID(json.getString("senderID"));
-		
-		if(json.has("subject"))
-			setSubject(json.getString("subject"));
-		
-		if(json.has("body"))
-			setBody(new Text(json.getString("body")));
 	}
 	
-	//SAVE MESSAGE
-	public void save(){
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		datastore.put(createEntityVersion());
-	}
-		
-	public void save(DatastoreService datastore){
-		datastore.put(createEntityVersion());
-	}	
-	
-	
-	//GENERATE RANDOM ID
 	public static String randomString(int length){
 		double random = Math.random();
 		String randomString = Double.toString(random).substring(2);
 		return randomString.substring(randomString.length()-length);
-	}	
+	}
+
+	public void save(){
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        datastore.put(createEntityVersion());
+	}
+
+	public void save(DatastoreService datastore){
+        datastore.put(createEntityVersion());
+	}
+
 	
-	//GETTERS AND SETTERS
+	public void update(JSONObject json) throws JSONException {
+		ArrayList<String> a = new ArrayList<String>();
+		if (json.has("profile")){
+			String profileId = json.getString("profile");
+			setProfile(profileId);
+			if (a.contains(profileId)==false)
+				a.add(profileId);
+		}
+
+		if (json.has("recipient")){ 
+			String recipientId = json.getString("recipient");
+			setRecipient(recipientId);
+			if (a.contains(recipientId)==false)
+				a.add(recipientId);
+		}
+
+		if (json.has("content"))
+			setContent(new Text(json.getString("content")));
+
+		if (json.has("subject"))
+			setSubject(json.getString("subject"));
+
+		if (json.has("thread"))
+			setThread(json.getString("thread"));
+
+
+		if (json.has("read")){
+			ArrayList<String> r = new ArrayList<String>();
+			JSONArray list = json.getJSONArray("read");
+			for (int i=0; i<list.length(); i++){
+				String participant = list.getString(i);
+				r.add(participant);
+			}
+			
+			setRead(r);
+		}
+
+		Collections.sort(a, String.CASE_INSENSITIVE_ORDER);
+		setParticipants(a);
+		
+		String th = a.get(0)+a.get(1);
+		setThread(th);
+	}
+	
+	
 	public String getId() {
 		return id;
 	}
+
 
 	public void setId(String id) {
 		this.id = id;
 	}
 
+
 	public Date getTimestamp() {
 		return timestamp;
 	}
 
+
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
+
+
+	public String getProfile() {
+		return profile;
+	}
+
+
+	public void setProfile(String profile) {
+		this.profile = profile;
+	}
+
+
+	public String getRecipient() {
+		return recipient;
+	}
+
+
+	public void setRecipient(String recipient) {
+		this.recipient = recipient;
+	}
+
+
+	public Text getContent() {
+		return content;
+	}
+
+
+	public void setContent(Text content) {
+		this.content = content;
+	}
+
+
+	public ArrayList<String> getParticipants() {
+		return participants;
+	}
+
+
+	public void setParticipants(ArrayList<String> participants) {
+		this.participants = participants;
+	}
 	
-	public String getThreadID() {
-		return threadID;
-	}
-
-	public void setThreadID(String threadID) {
-		this.threadID = threadID;
-	}
-
-	public String getSenderID() {
-		return senderID;
-	}
-
-	public void setSenderID(String senderID) {
-		this.senderID = senderID;
-	}
-
-	public String getRecipientID() {
-		return recipientID;
-	}
-
-	public void setRecipientID(String recipientID) {
-		this.recipientID = recipientID;
-	}
-
 	public String getSubject() {
 		return subject;
 	}
+
 
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
 
-	public Text getBody() {
-		return body;
+	public ArrayList<String> getRead() {
+		return read;
 	}
 
-	public void setBody(Text string) {
-		this.body = string;
+
+	public void setRead(ArrayList<String> read) {
+		this.read = read;
 	}
+
+	public String getThread() {
+		return thread;
+	}
+
+
+	public void setThread(String thread) {
+		this.thread = thread;
+	}
+
+	public String getIsMostRecent() {
+		return isMostRecent;
+	}
+
+
+	public void setIsMostRecent(String isMostRecent) {
+		this.isMostRecent = isMostRecent;
+	}
+
+
+
+
 	
-//- - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - -//
 	
-	//FETCH SINGLE MESSAGE (ID)
-	public static Message fetchMessage(DatastoreService datastore, String messageID){
-		Message m = null;
+// - - - - - - - - - - - - - - - - - - - - - - - - QUERIES - - - - - - - - - - - - - - - - - - - - - - - - - - - //	
+	
+	
+	public static Message fetchMessage(DatastoreService datastore, String messageId){
+		Message p = null;
+		
 		try {
-			Entity ent = datastore.get(KeyFactory.createKey("Message", messageID));
-			m = new Message(ent);
+			p = new Message(datastore.get(KeyFactory.createKey("Message", messageId)));
 		}
 		catch(EntityNotFoundException e){
+		
 		}
-		return m;
-	}	
-	
-	//FETCH ALL MESSAGES
-	public static ArrayList<Message> fetchMessages(DatastoreService datastore, int limit){
-		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
-		ArrayList<Message> messages = executeQuery(datastore, q, limit);
-		return messages;
+			
+		return p;
 	}
 	
 	
-	//FETCH MESSAGES (FILTER: THREAD ID)
-	public static ArrayList<Message> fetchMessagesByThread(DatastoreService datastore, String threadID,  int limit){
+	public static ArrayList<Message> fetchMessages(DatastoreService datastore){
 		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
-		
-		Filter threadFilter = new FilterPredicate("threadID", FilterOperator.EQUAL, threadID);
-		q.setFilter(threadFilter);
-		
-		ArrayList<Message> messages = executeQuery(datastore, q, limit);
+		ArrayList<Message> messages = executeQuery(datastore, q);
 		return messages;
 	}
 	
-	//FETCH MESSAGES (FILTER: SENDER ID)
-	public static ArrayList<Message> fetchMessagesBySender(DatastoreService datastore, String senderID,  int limit){
+
+	public static ArrayList<Message> fetchMessagesWithProfile(DatastoreService datastore, String profileId){
 		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
 		
-		Filter senderFilter = new FilterPredicate("senderID", FilterOperator.EQUAL, senderID);
-		q.setFilter(senderFilter);
-		
-		ArrayList<Message> messages = executeQuery(datastore, q, limit);
+		Filter profileFilter = new FilterPredicate("profile", FilterOperator.EQUAL, profileId.trim());
+		q.setFilter(profileFilter);
+		ArrayList<Message> messages = executeQuery(datastore, q);
 		return messages;
 	}
-	
-	//FETCH MESSAGES (FILTER: RECIPIENT ID)
-	public static ArrayList<Message> fetchMessagesByRecipient(DatastoreService datastore, String recipientID,  int limit){
+
+
+	public static ArrayList<Message> fetchMessagesWithRecipient(DatastoreService datastore, String recipient, boolean mostRecent){
 		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
 		
-		Filter recipientFilter = new FilterPredicate("recipientID", FilterOperator.EQUAL, recipientID);
-		q.setFilter(recipientFilter);
+		Filter profileFilter = new FilterPredicate("recipient", FilterOperator.EQUAL, recipient);
 		
-		ArrayList<Message> messages = executeQuery(datastore, q, limit);
+		if (mostRecent==true){
+			Filter mostRecentFilter = new FilterPredicate("isMostRecent", FilterOperator.EQUAL, "yes");
+			CompositeFilter filters = CompositeFilterOperator.and(profileFilter, mostRecentFilter);
+			q.setFilter(filters);
+		}
+		else{
+			q.setFilter(profileFilter);
+		}
+
+		
+		ArrayList<Message> messages = executeQuery(datastore, q);
 		return messages;
 	}
-	
-	//FETCH MESSAGES (FILTER: RECIPIENT ID & SENDER ID)
-	public static ArrayList<Message> fetchMessagesWithSenderAndReciever(DatastoreService datastore, String recipientID, String senderID,  int limit){
-		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.ASCENDING);
+
+	public static ArrayList<Message> fetchConversation(DatastoreService datastore, String thread){
+		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
 		
-		//FOR FIRST SET
-		Filter recipientFilter = new FilterPredicate("recipientID", FilterOperator.EQUAL, recipientID);
-		Filter senderFilter = new FilterPredicate("senderID", FilterOperator.EQUAL, senderID);
-		
-		CompositeFilter combinedFilter = CompositeFilterOperator.and(recipientFilter, senderFilter);
-		
-		//FOR FIRST SET
-		Filter recipientFilterB = new FilterPredicate("recipientID", FilterOperator.EQUAL, senderID);
-		Filter senderFilterB = new FilterPredicate("senderID", FilterOperator.EQUAL, recipientID);
-		
-		CompositeFilter combinedFilterB = CompositeFilterOperator.and(recipientFilterB, senderFilterB);
-		
-		//COMBINE TWO COMPOSITE FILTERS
-		CompositeFilter totalCombinedFilter = CompositeFilterOperator.or(combinedFilter, combinedFilterB);
-		q.setFilter(totalCombinedFilter);
-		
-		
-		ArrayList<Message> messages = executeQuery(datastore, q, limit);
+		Filter profileFilter = new FilterPredicate("thread", FilterOperator.EQUAL, thread);
+		q.setFilter(profileFilter);
+		ArrayList<Message> messages = executeQuery(datastore, q);
 		return messages;
 	}
-	
-	
-	//EXECUTE QUERY
-	private static ArrayList<Message> executeQuery(DatastoreService datastore, Query q, int limit){
+
+	public static ArrayList<Message> fetchMessagesWithParticipants(DatastoreService datastore, String participant, boolean mostRecent){
+		Query q = new Query("Message").addSort("timestamp", Query.SortDirection.DESCENDING);
+		
+		Filter profileFilter = new FilterPredicate("participants", FilterOperator.EQUAL, participant);
+		
+		if (mostRecent==true){
+			Filter mostRecentFilter = new FilterPredicate("isMostRecent", FilterOperator.EQUAL, "yes");
+			CompositeFilter filters = CompositeFilterOperator.and(profileFilter, mostRecentFilter);
+			q.setFilter(filters);
+		}
+		else{
+			q.setFilter(profileFilter);
+		}
+		
+		
+		ArrayList<Message> messages = executeQuery(datastore, q);
+		return messages;
+	}
+
+	private static ArrayList<Message> executeQuery(DatastoreService datastore, Query q){
 		PreparedQuery pq = datastore.prepare(q);
-		
-		FetchOptions options = (limit==0) ? FetchOptions.Builder.withDefaults() : FetchOptions.Builder.withLimit(limit);
-		QueryResultList<Entity> results = pq.asQueryResultList(options); //THE REQUEST
+		QueryResultList<Entity> results = pq.asQueryResultList(FetchOptions.Builder.withDefaults());
 		ArrayList<Message> messages = new ArrayList<Message>();
-		for(Entity e : results){
+		for (Entity e : results){
 			messages.add(new Message(e));
 		}
+		
 		return messages;
 	}
 
 
+		
+	
 }
