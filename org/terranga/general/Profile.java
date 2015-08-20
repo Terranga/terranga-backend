@@ -169,7 +169,6 @@ public class Profile {
 		summary.put("phone", getPhone());
 		summary.put("isFeatured", getIsFeatured());
 		summary.put("age", Long.toString(getAge()));
-//		summary.put("password", getPassword());
 		summary.put("image", getImage());
 		summary.put("profession", getProfession());
 		summary.put("points", getPoints());
@@ -637,9 +636,8 @@ public class Profile {
 		FetchOptions options = (limit==0) ? FetchOptions.Builder.withDefaults() : FetchOptions.Builder.withLimit(limit);
 		QueryResultList<Entity> results = pq.asQueryResultList(options);
 		ArrayList<Profile> profiles = new ArrayList<Profile>();
-		for (Entity e : results){
+		for (Entity e : results)
 			profiles.add(new Profile(e));
-		}
 		
 		return profiles;
 	}
