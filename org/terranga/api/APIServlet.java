@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.google.appengine.api.blobstore.BlobInfo;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
@@ -47,7 +44,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
-
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.terranga.general.*;
 
 @SuppressWarnings("serial")
@@ -110,9 +108,8 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("test")){
-	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	        Profile.fetchProfiles(datastore, 0);
-	        
+//	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//	        Message.fetchMessagesWithRecipient(datastore, "12123", true);
 	        
 	        
 	        //Endorsement.fetchEndorsements(datastore, 0);
@@ -120,7 +117,6 @@ public class APIServlet extends HttpServlet {
 //	        Endorsement.fetchEndorsementsWithEndorsed(datastore, "1", 0);
 //	        Review.fetchReviewsWithReviewed(datastore, "1", 0);
 //	        Dream.fetchDreamsWithProfileID(datastore, "123", 0);
-	        
 		}
 		
 		
@@ -287,14 +283,13 @@ public class APIServlet extends HttpServlet {
 		
 		if (resource.equals("messages")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        String messageId = request.getResourceIdentifier();
 	        
-	        String messageID = request.getResourceIdentifier();
-	        
-			if (messageID != null){
-				Message message = Message.fetchMessage(datastore, messageID);
+			if (messageId != null){
+				Message message = Message.fetchMessage(datastore, messageId );
 				if (message==null){
 					response.put("confirmation", "fail");
-					response.put("message", "Message "+messageID+" not found.");
+					response.put("message", "Message "+messageId +" not found.");
 			        	
 					JSONObject json = new JSONObject(response);
 					resp.getWriter().println(json.toString());
@@ -308,53 +303,85 @@ public class APIServlet extends HttpServlet {
 				resp.getWriter().println(json.toString());
 				return;
 			}
-	        
-	        String senderID = req.getParameter("senderID");
-	        String recipientID = req.getParameter("recipientID");
-	        String threadID = req.getParameter("threadID");  
-	        
+			
 			String limit = req.getParameter("limit");
 			if (limit==null)
 				limit = "0";
-	        
-	        ArrayList<Message> messages = null;
-	        
-	        if(senderID !=null && recipientID !=null)
-	        	messages = Message.fetchMessagesWithSenderAndReciever(datastore, recipientID, senderID, Integer.parseInt(limit));
-	        
-	        else if(senderID != null)
-	        	messages = Message.fetchMessagesBySender(datastore, senderID, Integer.parseInt(limit));
-	        
-	        else if(recipientID != null)
-	        	messages = Message.fetchMessagesByRecipient(datastore, recipientID, Integer.parseInt(limit));
-	        
-	        
-	        else if(threadID != null)
-	        	messages = Message.fetchMessagesByThread(datastore, threadID, Integer.parseInt(limit));
-	        
-	        else{
-	        	response.put("confirmation", "failure");
-				response.put("messages", "Invalid Request");
+			
+			String mostrecent = req.getParameter("mostrecent");
+			if (mostrecent==null)
+				mostrecent = "yes";
+			
+			boolean mostRecent = (mostrecent.equals("yes")) ? true : false;
+
+			ArrayList<Message> messages = null;
+			
+			String participants = req.getParameter("participants");
+			if (participants != null)
+		        messages = Message.fetchMessagesWithParticipants(datastore, participants, mostRecent);
+			
+			String recipient = req.getParameter("recipient");
+			if (recipient != null)
+		        messages = Message.fetchMessagesWithRecipient(datastore, recipient, mostRecent);
+			
+			
+			String conversation = req.getParameter("conversation");
+			if (conversation != null){
+				String[] p = conversation.split(",");
+				if (p.length < 2){
+					// error message
+				}
+				
+				ArrayList<String> a = new ArrayList<String>();
+				a.add(p[0]);
+				a.add(p[1]);
+				Collections.sort(a, String.CASE_INSENSITIVE_ORDER);
+				String thread = a.get(0)+a.get(1);
+		        
+		        messages = Message.fetchConversation(datastore, thread);
+			}
+			
+			if (messages == null){
+		        response.put("confirmation", "fail");
+				response.put("message", "Missing 'participants', 'conversation', or 'recipient' parameter.");
 		        	
 				JSONObject json = new JSONObject(response);
 				resp.getWriter().println(json.toString());
 				return;
+			}
+
+	        Map<String, Profile> profiles = new HashMap<String, Profile>();
+	        ArrayList<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	        for (Message message : messages){
+	        	Map<String, Object> summary = message.getSummary();
+	        	
+	        	String senderId = message.getProfile();
+	        	Profile sender = profiles.get(senderId);
+	        	if (sender == null){
+	        		sender = Profile.fetchProfile(datastore, senderId);
+	        		profiles.put(senderId, sender);
+	        	}
+	        	if (sender != null) // not sure why but for Lindsay, this comes back null
+	        		summary.put("profile", sender.getSummary());
+	        	
+	        	String recipientId = message.getRecipient();
+	        	Profile rec = profiles.get(recipientId);
+	        	if (rec == null){
+	        		rec = Profile.fetchProfile(datastore, recipientId);
+	        		profiles.put(recipientId, rec);
+	        	}
+	        	summary.put("recipient", rec.getSummary());
+	        	
+	        	list.add(summary);
 	        }
 	        
 
-	        
-	        
-	        ArrayList<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
-	        for (Message message : messages)
-	        	results.add(message.getSummary());
-	        
 	        response.put("confirmation", "success");
-			response.put("messages", results);
+			response.put("messages", list);
 	        	
 			JSONObject json = new JSONObject(response);
 			resp.getWriter().println(json.toString());
 			return;
-
 		}
 		
 		
@@ -623,9 +650,8 @@ public class APIServlet extends HttpServlet {
 		
 		
 		if (resource.equals("profiles")){
-			String requestBody = getBody(req);
-
 			try {
+				String requestBody = getBody(req);
 				JSONObject json = new JSONObject(requestBody);
 				
 				Profile profile = new Profile();
@@ -826,13 +852,34 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("messages")){
-			String body = getBody(req);
-			
 			try{
+				String body = getBody(req);
 				JSONObject json = new JSONObject(body);
 				Message message = new Message();
 				message.update(json);
-				message.save();
+				
+		        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				ArrayList<Message> thread = Message.fetchConversation(datastore, message.getThread());
+				for (Message msg : thread){
+					msg.setIsMostRecent("no");
+					msg.save(datastore);
+				}
+				
+				message.save(datastore);
+				
+				
+				Profile recipient = Profile.fetchProfile(datastore, message.getRecipient());
+				Profile sender = Profile.fetchProfile(datastore, message.getProfile());
+				if (recipient != null && sender != null) {
+					String firstName = sender.getFirstName().substring(0, 1).toUpperCase();
+					if (sender.getFirstName().length() > 1)
+						firstName = firstName+sender.getFirstName().substring(1, sender.getFirstName().length());
+					
+					String fullName = firstName+" "+sender.getLastName().substring(0, 1).toUpperCase();
+					EmailService.sendEmail(recipient.getEmail(), fullName+" sent you a message on Terranga! Login <a href='http://beta.terranga.co'>here </a>to check it out!", "Message from "+fullName+"!");
+					EmailService.sendEmail("dennykwon2@gmail.com", fullName+" sent you a message on Terranga! Login <a href='http://beta.terranga.co'>here </a>to check it out!", "Message from "+fullName+"!");
+				}
+				
 				
 				response.put("confirmation", "success");
 				response.put("message", message.getSummary()); 
@@ -850,9 +897,8 @@ public class APIServlet extends HttpServlet {
 		}
 			
 		if (resource.equals("insights")){
-			String body = getBody(req);
-			
 			try{
+				String body = getBody(req);
 				JSONObject json = new JSONObject(body);
 				Insight insight = new Insight();
 				insight.update(json);
@@ -1063,6 +1109,43 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 		}
+	
+		if (resource.equals("insights")){
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	        Insight insight = Insight.fetchInsight(datastore, identifier);
+	        if (insight==null){
+				response.put("confirmation", "fail");
+				response.put("message", "Insight "+identifier+" not found.");
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+	        }
+	        
+			try {
+				String requestBody = getBody(req);
+				JSONObject json = new JSONObject(requestBody);
+				insight.update(json);
+				insight.save(datastore);
+		        
+				response.put("confirmation", "success");
+				response.put("insight", insight.getSummary());
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+			}
+			catch(JSONException e){
+				response.put("confirmation", "fail");
+				response.put("message", e.getMessage());
+				
+				JSONObject reply = new JSONObject(response);
+				resp.getWriter().print(reply.toString());
+				return;
+			}
+		}
+		
+		
 		if (resource.equals("profilePage")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	        ProfilePage page = ProfilePage.fetchProfilePage(datastore, identifier);
@@ -1075,9 +1158,8 @@ public class APIServlet extends HttpServlet {
 				return;
 	        }
 
-	        
-			String requestBody = getBody(req);
 			try {
+				String requestBody = getBody(req);
 				JSONObject json = new JSONObject(requestBody);
 		        page.update(json);
 		        page.save(datastore);
@@ -1132,9 +1214,8 @@ public class APIServlet extends HttpServlet {
 	        	for (Insight insight : insights){
 		        	datastore.delete(insight.createEntityVersion().getKey());
 	        	}
-	        			
-	        	datastore.delete(profile.createEntityVersion().getKey());
 	        	
+	        	datastore.delete(profile.createEntityVersion().getKey());
 	        }
 	        
 			response.put("confirmation", "success");
@@ -1143,8 +1224,8 @@ public class APIServlet extends HttpServlet {
 			JSONObject reply = new JSONObject(response);
 			resp.getWriter().print(reply.toString());
 			return;
-	        
 		}
+		
 		
 		if (resource.equals("insights")){
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -1173,10 +1254,6 @@ public class APIServlet extends HttpServlet {
 			resp.getWriter().print(reply.toString());
 			return;
 		}
-		
-		
-
-		
 	}
 
 	
@@ -1272,92 +1349,16 @@ public class APIServlet extends HttpServlet {
         return blobKey;
 	}
 	
-
-	private byte[] fetchFileBytes(String filepath) throws FileNotFoundException, IOException {
-		File file = new File(filepath);
-		
-		byte fileContent[] = new byte[(int)file.length()];
-		FileInputStream fin = new FileInputStream(file);
-		fin.read(fileContent);
-		fin.close();
-		return fileContent;
-	}
+//	private byte[] fetchFileBytes(String filepath) throws FileNotFoundException, IOException {
+//		File file = new File(filepath);
+//		
+//		byte fileContent[] = new byte[(int)file.length()];
+//		FileInputStream fin = new FileInputStream(file);
+//		fin.read(fileContent);
+//		fin.close();
+//		return fileContent;
+//	}
 	
-	/*
-	private void sendEmailWithAttachment(String recipient, String content, byte[] attch, String fileName) throws AddressException, MessagingException, UnsupportedEncodingException {
-		Properties props = new Properties();
-	    Session session = Session.getDefaultInstance(props, null);
-	    
-        Message msg = new MimeMessage(session);
-        InternetAddress from = new InternetAddress("info@thegridmedia.com", "Terranga");
-        msg.setFrom(from);
-        InternetAddress to = new InternetAddress(recipient, recipient);
-        msg.addRecipient(Message.RecipientType.TO, to);
-        msg.setSubject("Terranga");
-        
-        Multipart mp = new MimeMultipart();
-        MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(content, "text/html");
-        mp.addBodyPart(htmlPart);
-        
-        MimeBodyPart attachment = new MimeBodyPart();
-        
-//        DataSource src =  new ByteArrayDataSource(attch, "text/csv");
-//        DataSource src =  new ByteArrayDataSource(attch, "application/msword");
-        
-        DataSource src =  new ByteArrayDataSource(attch, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        DataHandler handler = new DataHandler(src);
-        attachment.setFileName(fileName);
-        attachment.setDisposition(Part.ATTACHMENT);
-        attachment.setDataHandler(handler); 
-        
-        mp.addBodyPart(attachment);
-        msg.setContent(mp);
-        Transport.send(msg);
-	} */
-
 	
-	/*
-	public boolean sendEmail(String recipient, String content, String subject){
-		boolean confirmation = false;
-		Properties props = new Properties();
-	    Session session = Session.getDefaultInstance(props, null);
-	    try {
-	        Message msg = new MimeMessage(session);
-            InternetAddress from = new InternetAddress("info@thegridmedia.com", "Terranga");
-            msg.setFrom(from);
-            InternetAddress to = new InternetAddress(recipient, recipient);
-            msg.addRecipient(Message.RecipientType.TO, to);
-            msg.setSubject(subject);
-            
-            Multipart mp = new MimeMultipart();
-            MimeBodyPart htmlPart = new MimeBodyPart();
-            htmlPart.setContent(content, "text/html");
-            mp.addBodyPart(htmlPart);
-            
-            msg.setContent(mp);
-            Transport.send(msg);
-            return true;
-	    }
-        catch (UnsupportedEncodingException e){ 
-        	e.printStackTrace(); 
-        	confirmation = false;
-        }
-	    catch (AddressException e) {
-        	e.printStackTrace(); 
-        	confirmation = false;
-	    }
-	    catch (MessagingException e) {
-        	e.printStackTrace(); 
-        	confirmation = false;
-	    }	
-	    return confirmation;
-	}
-	
-	public boolean sendEmail(String recipient, String content){
-		return sendEmail(recipient, content, "Terranga");
-	}
-	*/
-
 
 }
