@@ -560,11 +560,11 @@ public class APIServlet extends HttpServlet {
 				return;
 			}
 	        
-	        String reviewed = req.getParameter("reviewed");
+	        String reviewed = req.getParameter("reviewed"); // profile being reviewed
 	        String reviewedBy = req.getParameter("reviewedBy");
 	        
 			String limit = req.getParameter("limit");
-			if (limit==null)
+			if (limit == null)
 				limit = "0";
 	        
 	        ArrayList<Review> reviews = null;
@@ -968,9 +968,8 @@ public class APIServlet extends HttpServlet {
 		}
 		
 		if (resource.equals("reviews")){
-			String body = getBody(req);
-			
 			try{
+				String body = getBody(req);
 				JSONObject json = new JSONObject(body);
 				Review review = new Review();
 				review.update(json);
