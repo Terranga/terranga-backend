@@ -52,7 +52,8 @@ public class StripeServlet extends HttpServlet {
 				return;
 			}
 			
-			Stripe.apiKey = "sk_live_W7Hn8J2Cq4VDaT7KGjWS2n4u";
+			Stripe.apiKey = "sk_live_FNZB1G4O0u9iyCrtTkzdIu6k";
+			
 
 			// charge the customer, not the card:
 			Map<String, Object> chargeInfo = new HashMap <String, Object>();
@@ -114,10 +115,9 @@ public class StripeServlet extends HttpServlet {
 			try { 
 				Profile profile = login.getProfile();
 				
-				Stripe.apiKey = "sk_live_W7Hn8J2Cq4VDaT7KGjWS2n4u";
+				Stripe.apiKey = "sk_live_FNZB1G4O0u9iyCrtTkzdIu6k";
 				Object token = req.getParameter("stripeToken");
 
-				
 				Map<String, Object> customerInfo = new HashMap <String, Object>();
 				customerInfo.put("card", token);
 				customerInfo.put("email", profile.getEmail());
